@@ -23,7 +23,7 @@ export class MainScene extends Phaser.Scene {
         console.log('MainScene preload');
 
         // サンプルで画像をロード
-        //this.load.image('logo', './textures/suzuran_logo_withname.webp');
+        this.load.image('logo', './textures/suzuran_logo_withname.webp');
     }
     
     /**
@@ -35,7 +35,7 @@ export class MainScene extends Phaser.Scene {
         const canvas = this.game.canvas;
 
         // 画像
-        //this.add.image(canvas.width/2, canvas.height/2, 'logo');
+        this.add.image(canvas.width/2, canvas.height/2, 'logo');
 
         // テキスト
         const text = this.add.text(0, 0, "GLSL Creatures", {fontSize: 30});
