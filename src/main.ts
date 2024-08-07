@@ -21,6 +21,9 @@ export class MainScene extends Phaser.Scene {
      */
     preload() {
         console.log('MainScene preload');
+
+        // サンプルで画像をロード
+        this.load.image('logo', './textures/suzuran_logo_withname.webp');
     }
     
     /**
@@ -29,14 +32,16 @@ export class MainScene extends Phaser.Scene {
     create() {
         console.log('MainScene create');
 
+        const canvas = this.game.canvas;
+
+        // 画像
+        this.add.image(canvas.width/2, canvas.height/2, 'logo');
+
         // テキスト
         const text = this.add.text(0, 0, "GLSL Creatures", {fontSize: 30});
         text.setOrigin(0.5, 0.5);
         text.setFill('#ffffff');
-
-        // 座標を設定
-        const canvas = this.game.canvas;
-        text.setPosition(canvas.width/2, canvas.height/2);
+        text.setPosition(canvas.width/2, canvas.height/2 + 200);
     }
 }
 
