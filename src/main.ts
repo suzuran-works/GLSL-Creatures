@@ -28,6 +28,15 @@ export class MainScene extends Phaser.Scene {
      */
     create() {
         console.log('MainScene create');
+
+        // テキスト
+        const text = this.add.text(0, 0, "GLSL Creatures", {fontSize: 30});
+        text.setOrigin(0.5, 0.5);
+        text.setFill('#ffffff');
+
+        // 座標を設定
+        const canvas = this.game.canvas;
+        text.setPosition(canvas.width/2, canvas.height/2);
     }
 }
 

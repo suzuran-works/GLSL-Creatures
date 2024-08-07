@@ -8,17 +8,14 @@ const ScreenSize = {
     Height: 1080
 };
 
-const windowAspect = window.innerHeight / window.innerWidth;
+const windowAspect = window.innerWidth / window.innerHeight;
 
 export const CustomFontFamily = "misaki_gothic_2nd";
 
 const config: GameConfig = {
     type: Phaser.AUTO,
     scale: {
-        mode:
-          windowAspect > ScreenSize.Width / ScreenSize.Height
-            ? Phaser.Scale.HEIGHT_CONTROLS_WIDTH
-            : Phaser.Scale.WIDTH_CONTROLS_HEIGHT,
+        mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: ScreenSize.Width,
         height: ScreenSize.Height,

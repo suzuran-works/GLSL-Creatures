@@ -5,7 +5,7 @@ export default defineConfig({
         assetsInlineLimit: 0,
     },
     server: {
-        host: 'localhost',
+        host: true,
         port: 5555,
     }
 });
