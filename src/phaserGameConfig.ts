@@ -1,11 +1,11 @@
 import Phaser from "phaser";
 import GameConfig = Phaser.Types.Core.GameConfig;
 import { MainScene } from "./main.ts";
-import {PlaneShaderExScene} from "./shaderExSceneBase.ts";
+//import {PlaneShaderExScene} from "./shaderExSceneBase.ts";
 
 const ScreenSize = {
     Width: 1080,
-    Height: 1920
+    Height: 1080
 };
 
 const windowAspect = window.innerHeight / window.innerWidth;
@@ -23,7 +23,7 @@ const config: GameConfig = {
         width: ScreenSize.Width,
         height: ScreenSize.Height,
     },
-    scene: [MainScene, PlaneShaderExScene],
+    scene: [MainScene/*, PlaneShaderExScene*/],
     physics: {
         default: 'arcade',
         arcade: {

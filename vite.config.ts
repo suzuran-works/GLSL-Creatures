@@ -4,5 +4,9 @@ export default defineConfig({
     build: {
         assetsInlineLimit: 0,
     },
+    server: {
+        host: 'localhost',
+        port: 5555,
+    }
 });
 
