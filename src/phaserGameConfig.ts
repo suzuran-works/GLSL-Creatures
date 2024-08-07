@@ -1,14 +1,11 @@
 import Phaser from "phaser";
 import GameConfig = Phaser.Types.Core.GameConfig;
 import { MainScene } from "./main.ts";
-//import {PlaneShaderExScene} from "./shaderExSceneBase.ts";
 
 const ScreenSize = {
     Width: 1080,
     Height: 1080
 };
-
-const windowAspect = window.innerWidth / window.innerHeight;
 
 export const CustomFontFamily = "misaki_gothic_2nd";
 
