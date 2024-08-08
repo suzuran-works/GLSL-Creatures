@@ -37,8 +37,19 @@ export class SummaryScene extends Phaser.Scene {
         // 画像
         this.add.image(canvas.width/2, canvas.height/2, 'logo');
 
+        // URLからパラメータを取得
+        const params = new URLSearchParams(window.location.search);
+        const idx = params.get('idx');
+
+        // パラメータに基づいてゲームの設定を行う
+        let msg = 'frask';
+        if (idx) {
+            console.log(`index: ${idx}`);
+            msg = `frask: ${idx}`;
+        }
+
         // テキスト
-        const text = this.add.text(0, 0, "frask", {fontSize: 30});
+        const text = this.add.text(0, 0, msg, {fontSize: 30});
         text.setOrigin(0.5, 0.5);
         text.setFill('#ffffff');
         text.setPosition(canvas.width/2, canvas.height/2 + 200);

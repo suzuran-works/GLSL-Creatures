@@ -1,8 +1,6 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
-//const base = 'GLSL-Creatures';
-
 export default defineConfig({
     build: {
         assetsInlineLimit: 0,
