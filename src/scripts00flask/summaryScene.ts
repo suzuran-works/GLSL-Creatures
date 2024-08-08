@@ -1,36 +1,36 @@
 import Phaser from 'phaser';
-
+import {CreateConfig} from "../define.ts";
 
 /**
- * テストシーン
+ * SummaryScene
  */
-export class MainScene extends Phaser.Scene {
+export class SummaryScene extends Phaser.Scene {
     
-    public static Key = 'mainScene';
+    public static Key = 'SummaryScene';
     
     /**
      * コンストラクタ
      */
     constructor() {
-        super(MainScene.Key);
-        console.log('MainScene constructor');
+        super(SummaryScene.Key);
+        console.log('SummaryScene constructor');
     }
     
     /**
      * プリロード
      */
     preload() {
-        console.log('MainScene preload');
+        console.log('SummaryScene preload');
 
         // サンプルで画像をロード
-        this.load.image('logo', './textures/suzuran_logo_withname.webp');
+        this.load.image('logo', '../public/textures/suzuran_logo_withname.webp');
     }
     
     /**
      * ゲームオブジェクト初期化
      */
     create() {
-        console.log('MainScene create');
+        console.log('SummaryScene create');
 
         const canvas = this.game.canvas;
 
@@ -38,10 +38,11 @@ export class MainScene extends Phaser.Scene {
         this.add.image(canvas.width/2, canvas.height/2, 'logo');
 
         // テキスト
-        const text = this.add.text(0, 0, "GLSL Creatures", {fontSize: 30});
+        const text = this.add.text(0, 0, "frask", {fontSize: 30});
         text.setOrigin(0.5, 0.5);
         text.setFill('#ffffff');
         text.setPosition(canvas.width/2, canvas.height/2 + 200);
     }
 }
 
+new Phaser.Game(CreateConfig([SummaryScene]));
