@@ -23,7 +23,7 @@ export class SummaryScene extends Phaser.Scene {
         console.log('SummaryScene preload');
 
         // サンプルで画像をロード
-        this.load.image('logo', '../public/textures/suzuran_logo_withname.webp');
+        this.load.image('logo', '../textures/suzuran_logo_withname.webp');
     }
     
     /**
