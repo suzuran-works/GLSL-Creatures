@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
 import {CreateConfig} from "../define.ts";
+import {FlaskView} from "./flaskView.ts";
+import {tweenAsync} from "../utility/tweenAsync.ts";
+
 
 /**
  * SummaryScene
@@ -35,7 +38,7 @@ export class SummaryScene extends Phaser.Scene {
         const canvas = this.game.canvas;
 
         // 画像
-        this.add.image(canvas.width/2, canvas.height/2, 'logo');
+        //this.add.image(canvas.width/2, canvas.height/2, 'logo');
 
         // URLからパラメータを取得
         const params = new URLSearchParams(window.location.search);
@@ -45,14 +48,27 @@ export class SummaryScene extends Phaser.Scene {
         let msg = 'flask';
         if (idx) {
             console.log(`index: ${idx}`);
-            msg = `frask: ${idx}`;
+            msg = `フラスコの中の何か: ${idx}`;
         }
 
         // テキスト
         const text = this.add.text(0, 0, msg, {fontSize: 30});
         text.setOrigin(0.5, 0.5);
         text.setFill('#ffffff');
-        text.setPosition(canvas.width/2, canvas.height/2 + 200);
+        text.setPosition(canvas.width/2, canvas.height - 78);
+        
+        // フラスコ
+        const flask = new FlaskView(this, 780, 780);
+        flask.setPosition(canvas.width/2, canvas.height/2);
+        
+        tweenAsync(this, {
+            targets: flask,
+            duration: 3000,
+            x: 600,
+            repeat: -1,
+            yoyo: true,
+            ease: 'Sine.easeInOut'
+        }).then();
     }
 }
 
