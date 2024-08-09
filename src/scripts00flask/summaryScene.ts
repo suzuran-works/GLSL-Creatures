@@ -42,7 +42,7 @@ export class SummaryScene extends Phaser.Scene {
         const idx = params.get('idx');
 
         // パラメータに基づいてゲームの設定を行う
-        let msg = 'frask';
+        let msg = 'flask';
         if (idx) {
             console.log(`index: ${idx}`);
             msg = `frask: ${idx}`;
