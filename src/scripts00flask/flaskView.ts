@@ -22,7 +22,7 @@ export class FlaskView extends Phaser.GameObjects.Container {
     this.setSize(width, height);
    
     // デバッグビュー
-    this.addBaseDebugView();
+    //this.addBaseDebugView();
     
     // フラスコの輪郭を描画
     this.drawFlaskOutline();
@@ -43,7 +43,7 @@ export class FlaskView extends Phaser.GameObjects.Container {
     }
     
     this.flaskOutlineGraphics.clear();
-    this.flaskOutlineGraphics.lineStyle(2, GetColorCodeByRGB(255,255,255), 1);
+    this.flaskOutlineGraphics.lineStyle(4, GetColorCodeByRGB(155,155,155), 1);
     this.flaskOutlineLeft.draw(this.flaskOutlineGraphics);
   }
   

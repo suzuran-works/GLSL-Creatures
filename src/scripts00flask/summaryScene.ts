@@ -64,7 +64,7 @@ export class SummaryScene extends Phaser.Scene {
         tweenAsync(this, {
             targets: flask,
             duration: 3000,
-            x: 600,
+            x: 540,
             repeat: -1,
             yoyo: true,
             ease: 'Sine.easeInOut'
