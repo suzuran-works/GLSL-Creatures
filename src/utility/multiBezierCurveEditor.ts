@@ -23,6 +23,8 @@ export class MultiBezierCurveEditor {
     
     this.drawCirclePoints();
     this.linkStartAndEndPoints();
+    this.linkSymmetricPoints();
+    this.linkShiftPoints();
   }
   
   private drawCirclePoints() {
@@ -32,9 +34,11 @@ export class MultiBezierCurveEditor {
       this.container.add(circleS);
 
       const circleC1 = new TouchableCircle(this.scene, curveUnit.controlPoint1, GetColorCodeByRGB(255,0,255));
+      circleC1.setRelatedTipPoint(curveUnit.startPoint);
       this.container.add(circleC1);
 
       const circleC2 = new TouchableCircle(this.scene, curveUnit.controlPoint2, GetColorCodeByRGB(0,255,255));
+      circleC2.setRelatedTipPoint(curveUnit.endPoint);
       this.container.add(circleC2);
       
       const circleE = new TouchableCircle(this.scene, curveUnit.endPoint, GetColorCodeByRGB(255,255,255));
@@ -49,7 +53,24 @@ export class MultiBezierCurveEditor {
     for (let i = 1; i < this.touchablecircleSets.length; i++) {
       const set = this.touchablecircleSets[i];
       const prevSet = this.touchablecircleSets[i-1];
-      set.cs.link(prevSet.ce);
+      set.cs.setLink(prevSet.ce);
+    }
+  }
+  
+  private linkSymmetricPoints() {
+    for (let i = 1; i < this.touchablecircleSets.length; i++) {
+      const set = this.touchablecircleSets[i];
+      const prevSet = this.touchablecircleSets[i-1];
+      set.cc1.setSymmetric(prevSet.cc2);
+      prevSet.cc2.setSymmetric(set.cc1);
+    }
+  }
+  
+  private linkShiftPoints() {
+    for (let i = 0; i < this.touchablecircleSets.length; i++) {
+      const set = this.touchablecircleSets[i];
+      set.cs.setShift(set.cc1);
+      set.ce.setShift(set.cc2);
     }
   }
 }
@@ -71,7 +92,15 @@ class TouchableCircleSet {
 class TouchableCircle extends Phaser.GameObjects.Container {
   private readonly point!: Phaser.Math.Vector2;
   private readonly circle!: Phaser.GameObjects.Arc;
+  
+  // 自身がコントロールポイントの時に関連する端点
+  private relatedTipPoint?: Phaser.Math.Vector2;
+  // 自身が端点ポイントの時にリンクされた端点ポイント
   private linkedOther?: TouchableCircle;
+  // 自身がコントロールポイントの時に対称移動させるコントロールポイント
+  private symmetricOther?: TouchableCircle;
+  // 自身が端点ポイントの時に同時に並行移動させるコントロールポイント
+  private shiftOther?: TouchableCircle;
   
   /**
    * コンストラクタ
@@ -104,8 +133,28 @@ class TouchableCircle extends Phaser.GameObjects.Container {
     
     // ドラッグ中
     this.on("drag", (_pointer: Phaser.Input.Pointer, dragX: number, dragY: number) => {
+      // 並行移動点があれば位置更新
+      if (this.shiftOther) {
+        const diffX = this.shiftOther.x - this.x;
+        const diffY = this.shiftOther.y - this.y;
+        this.shiftOther.updatePosition(dragX + diffX, dragY + diffY);
+        
+        // 点対象移動点も考慮
+        if (this.shiftOther.symmetricOther) {
+          this.shiftOther.symmetricOther.updateAsSymmetric(
+            this.shiftOther.x,
+            this.shiftOther.y
+          );
+        }
+      }
+      
+      // 自身の移動
       this.updatePosition(dragX, dragY);
+      
+      // 連結点があれば位置同期
       if (this.linkedOther) this.linkedOther.updatePosition(dragX, dragY);
+      // 点対象移動点があれば位置更新
+      if (this.symmetricOther) this.symmetricOther.updateAsSymmetric(dragX, dragY);
     });
     
     // ドラッグ終了時
@@ -114,12 +163,32 @@ class TouchableCircle extends Phaser.GameObjects.Container {
     });
   }
   
-  public link(other: TouchableCircle) {
+  public setRelatedTipPoint(point: Phaser.Math.Vector2) {
+    this.relatedTipPoint = point;
+  }
+  
+  public setLink(other: TouchableCircle) {
     this.linkedOther = other;
+  }
+  
+  public setSymmetric(other: TouchableCircle) {
+    this.symmetricOther = other;
+  }
+
+  public setShift(other: TouchableCircle) {
+    this.shiftOther = other;
   }
   
   public updatePosition(x: number, y: number) {
     this.setPosition(x, y);
     this.point.set(x, y);
+  }
+  
+  public updateAsSymmetric(originX: number, originY: number) {
+    const diffX = this.relatedTipPoint!.x - originX;
+    const diffY = this.relatedTipPoint!.y - originY;
+    const x = this.relatedTipPoint!.x + diffX;
+    const y = this.relatedTipPoint!.y + diffY;
+    this.updatePosition(x, y);
   }
 }
