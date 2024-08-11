@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import {GetColorCodeByRGB} from "../utility/colorUtility.ts";
-import {FlaskOutline} from "./flaskOutline.ts";
+import {MultiBezierCurve} from "../utility/multiBezierCurve.ts";
+import {MultiBezierCurveEditor} from "../utility/multiBezierCurveEditor.ts";
 
 /**
  * フラスコビュー
@@ -9,7 +10,10 @@ import {FlaskOutline} from "./flaskOutline.ts";
 export class FlaskView extends Phaser.GameObjects.Container {
   
   private flaskOutlineGraphics!: Phaser.GameObjects.Graphics;
-  private flaskOutlineLeft!: FlaskOutline;
+  private flaskOutlineLeft!: MultiBezierCurve;
+  private flaskOutlineLeftEditor!: MultiBezierCurveEditor;
+  
+  private isEditMode = true;
   
   /**
    * コンストラクタ
@@ -35,11 +39,12 @@ export class FlaskView extends Phaser.GameObjects.Container {
       this.add(this.flaskOutlineGraphics); 
       
       // アウトライン左側
-      this.flaskOutlineLeft = new FlaskOutline(
+      this.flaskOutlineLeft = new MultiBezierCurve(
         2,
         {x:0, y:this.height/2},
         {x:0, y:-this.height/2}
       );
+      if (this.isEditMode) this.flaskOutlineLeftEditor = new MultiBezierCurveEditor(this.scene, this, this.flaskOutlineLeft);
     }
     
     this.flaskOutlineGraphics.clear();
@@ -48,6 +53,7 @@ export class FlaskView extends Phaser.GameObjects.Container {
   }
   
   public updateView() {
+    if (!this.isEditMode) return;
     this.drawFlaskOutline();
   }
   

@@ -12,6 +12,8 @@ export class SummaryScene extends Phaser.Scene {
     
     public static Key = 'SummaryScene';
     
+    private flaskView!: FlaskView;
+    
     /**
      * コンストラクタ
      */
@@ -62,17 +64,21 @@ export class SummaryScene extends Phaser.Scene {
         text.setPosition(canvas.width/2, canvas.height - 22);
         
         // フラスコ
-        const flask = new FlaskView(this, 1000, 1000);
-        flask.setPosition(canvas.width/2, canvas.height/2 -22);
+        this.flaskView = new FlaskView(this, 1000, 1000);
+        this.flaskView.setPosition(canvas.width/2, canvas.height/2 -22);
         
         tweenAsync(this, {
-            targets: flask,
+            targets: this.flaskView,
             duration: 3000,
             x: 540,
             repeat: -1,
             yoyo: true,
             ease: 'Sine.easeInOut'
         }).then();
+    }
+    
+    update() {
+        this.flaskView.updateView();
     }
 }
 

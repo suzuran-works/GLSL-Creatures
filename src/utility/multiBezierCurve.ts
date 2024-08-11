@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-export class FlaskOutline {
+export class MultiBezierCurve {
   
   // 曲線配列
   public curveUnits: CurveUnit[];
