@@ -3,22 +3,27 @@ import Phaser from "phaser";
 /**
  * スクリーンサイズ
  */
-export const ScreenSize = {
-  Width: 1080,
-  Height: 1080
+export const SCREEN_SIZE = {
+  WIDTH: 1080,
+  HEIGHT: 1080
 };
+
+/**
+ * フォントファミリー
+ */
+export const FONT_SMARTFONTUI = "smartfontui";
 
 /**
  * Phaserコンフィグ作成
  */
-export const CreateConfig = (scenes: Phaser.Types.Scenes.SceneType[]) => {
+export const createConfig = (scenes: Phaser.Types.Scenes.SceneType[]) => {
   return {
     type: Phaser.AUTO,
     scale: {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
-      width: ScreenSize.Width,
-      height: ScreenSize.Height,
+      width: SCREEN_SIZE.WIDTH,
+      height: SCREEN_SIZE.HEIGHT,
     },
     scene: scenes,
     physics: {

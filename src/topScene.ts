@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import {CreateConfig} from "./define.ts";
+import {createConfig} from "./define.ts";
 
 
 /**
@@ -46,4 +46,4 @@ export class TopScene extends Phaser.Scene {
     }
 }
 
-new Phaser.Game(CreateConfig([TopScene]));
+new Phaser.Game(createConfig([TopScene]));

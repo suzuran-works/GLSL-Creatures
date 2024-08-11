@@ -22,7 +22,7 @@ export class FlaskView extends Phaser.GameObjects.Container {
     this.setSize(width, height);
    
     // デバッグビュー
-    //this.addBaseDebugView();
+    this.addBaseDebugView();
     
     // フラスコの輪郭を描画
     this.drawFlaskOutline();
@@ -56,7 +56,7 @@ export class FlaskView extends Phaser.GameObjects.Container {
    */
   private addBaseDebugView() {
     const color = GetColorCodeByRGB(255,255,255);
-    const alpha = 0.1;
+    const alpha = 0.0;
     const rect = new Phaser.GameObjects.Rectangle(this.scene, 0, 0, this.width, this.height, color, alpha);
     this.add(rect);
   }

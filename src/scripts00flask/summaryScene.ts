@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
-import {CreateConfig} from "../define.ts";
+import {createConfig, FONT_SMARTFONTUI} from "../define.ts";
 import {FlaskView} from "./flaskView.ts";
 import {tweenAsync} from "../utility/tweenAsync.ts";
+import {GetColorCodeTextByRGB} from "../utility/colorUtility.ts";
 
 
 /**
@@ -52,14 +53,17 @@ export class SummaryScene extends Phaser.Scene {
         }
 
         // テキスト
-        const text = this.add.text(0, 0, msg, {fontSize: 30});
+        const text = this.add.text(0, 0, msg, {
+            fontSize: 30,
+            fontFamily: FONT_SMARTFONTUI,
+        });
         text.setOrigin(0.5, 0.5);
-        text.setFill('#ffffff');
-        text.setPosition(canvas.width/2, canvas.height - 78);
+        text.setFill(GetColorCodeTextByRGB(180, 180, 180));
+        text.setPosition(canvas.width/2, canvas.height - 22);
         
         // フラスコ
-        const flask = new FlaskView(this, 780, 780);
-        flask.setPosition(canvas.width/2, canvas.height/2);
+        const flask = new FlaskView(this, 1000, 1000);
+        flask.setPosition(canvas.width/2, canvas.height/2 -22);
         
         tweenAsync(this, {
             targets: flask,
@@ -72,4 +76,4 @@ export class SummaryScene extends Phaser.Scene {
     }
 }
 
-new Phaser.Game(CreateConfig([SummaryScene]));
+new Phaser.Game(createConfig([SummaryScene]));
