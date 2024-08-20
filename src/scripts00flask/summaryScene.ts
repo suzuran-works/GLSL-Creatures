@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import {createConfig, FONT_SMARTFONTUI} from "../define.ts";
 import {FlaskView} from "./flaskView.ts";
-import {tweenAsync} from "../utility/tweenAsync.ts";
 import {GetColorCodeTextByRGB} from "../utility/colorUtility.ts";
 import {getShaderKey} from "../utility/assetResourceKeyUtility.ts";
 import {AssetLoader} from "../utility/assetLoader.ts";
@@ -81,18 +80,22 @@ export class SummaryScene extends Phaser.Scene {
         
         // フラスコ
         const canvas = this.game.canvas;
+        const width = 1000;
+        const height = 1000;
         const key = getShaderKey(this.category,0);
-        this.flaskView = new FlaskView(this, 1000, 1000, key);
+        this.flaskView = new FlaskView(this, width, height, key);
         this.flaskView.setPosition(canvas.width/2, canvas.height/2 -22);
 
+        /*
         tweenAsync(this, {
             targets: this.flaskView,
             duration: 3000,
-            y: 530,
+            y: 540,
             repeat: -1,
             yoyo: true,
             ease: 'Sine.easeInOut'
         }).then();
+         */
     }
     
     update() {

@@ -77,7 +77,7 @@ export class AssetLoader extends Scene {
       const key = getAssetResourceKey(path);
       this.load.text(key, path);
       loadCache.set(path, key);
-      console.log("shader text loaded  key:", key, path);
+      console.log("shader text loaded:", key, path);
     }
     
     // テクスチャロード
@@ -86,7 +86,7 @@ export class AssetLoader extends Scene {
       const key = getAssetResourceKey(path);
       this.load.image(key, path);
       loadCache.set(path, key);
-      console.log("texture loaded  key:", key, path);
+      console.log("texture loaded:", key, path);
     }
   }
 
