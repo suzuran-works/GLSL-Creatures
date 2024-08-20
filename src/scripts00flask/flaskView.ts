@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import {GetColorCodeByRGB} from "../utility/colorUtility.ts";
 import {MultiBezierCurve} from "../utility/multiBezierCurve.ts";
 import {MultiBezierCurveEditor} from "../utility/multiBezierCurveEditor.ts";
+import {ShaderGameObject} from "../utility/shaderGameObject.ts";
 
 /**
  * フラスコビュー
@@ -18,7 +19,7 @@ export class FlaskView extends Phaser.GameObjects.Container {
   /**
    * コンストラクタ
    */
-  constructor(scene: Phaser.Scene, width: number, height: number) {
+  constructor(scene: Phaser.Scene, width: number, height: number, shaderKey: string) {
     super(scene, 0, 0);
     scene.add.existing(this);
     
@@ -27,9 +28,19 @@ export class FlaskView extends Phaser.GameObjects.Container {
    
     // デバッグビュー
     this.addBaseDebugView();
+
+    // シェーダーオブジェクト作成
+    this.addShaderObject(shaderKey);
     
     // フラスコの輪郭を描画
     this.drawFlaskOutline();
+  }
+  
+  private addShaderObject(shaderKey: string) {
+    const width = this.width;
+    const height = this.height;
+    const shaderObject = new ShaderGameObject(this.scene, width, height, shaderKey);
+    this.add(shaderObject);
   }
   
   private drawFlaskOutline() {

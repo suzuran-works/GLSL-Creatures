@@ -30,6 +30,9 @@ export class SummaryScene extends Phaser.Scene {
 
         // サンプルで画像をロード
         this.load.image('logo', '../textures/suzuran_logo_withname.webp');
+        
+        // サンプルでシェーダーテキストをロード
+        this.load.text('sample', '../shaders/shaders00flask/shader_00-00.frag');
     }
     
     /**
@@ -64,7 +67,7 @@ export class SummaryScene extends Phaser.Scene {
         text.setPosition(canvas.width/2, canvas.height - 22);
         
         // フラスコ
-        this.flaskView = new FlaskView(this, 1000, 1000);
+        this.flaskView = new FlaskView(this, 1000, 1000, 'sample');
         this.flaskView.setPosition(canvas.width/2, canvas.height/2 -22);
         
         tweenAsync(this, {
