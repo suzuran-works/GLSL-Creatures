@@ -5,7 +5,7 @@ import {tweenAsync} from "../utility/tweenAsync.ts";
 import {GetColorCodeTextByRGB} from "../utility/colorUtility.ts";
 import {getShaderKey} from "../utility/assetResourceKeyUtility.ts";
 import {AssetLoader, AssetLoaderSceneModel} from "../utility/assetLoader.ts";
-import {waitMilliSeconds, waitUntil} from "../utility/asyncUtility.ts";
+import {waitUntil} from "../utility/asyncUtility.ts";
 
 
 /**

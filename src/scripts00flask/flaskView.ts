@@ -12,6 +12,8 @@ export class FlaskView extends Phaser.GameObjects.Container {
   
   private flaskOutlineGraphics!: Phaser.GameObjects.Graphics;
   private flaskOutlineLeft!: MultiBezierCurve;
+  
+  // @ts-ignore
   private flaskOutlineLeftEditor!: MultiBezierCurveEditor;
   
   private isEditMode = true;
