@@ -34,6 +34,50 @@ export class MultiBezierCurve {
   }
   
   /**
+   * 複製
+   */
+  public deepCopy() {
+    const startPoint = this.curveUnits[0].startPoint;
+    const endPoint = this.curveUnits[this.curveUnits.length - 1].endPoint;
+    const newMultiBezierCurve = new MultiBezierCurve(
+      this.curveUnits.length, 
+      {x: startPoint.x, y: startPoint.y},
+      {x: endPoint.x, y: endPoint.y}
+    );
+    for(let i = 0; i < this.curveUnits.length; i++) {
+      newMultiBezierCurve.curveUnits[i] = this.curveUnits[i].deepCopy();
+    }
+    return newMultiBezierCurve;
+  }
+  
+  /**
+   * 指定のMultiBezierCurveの左右反転で描画
+   */
+  public drawLRFlip(graphics: Phaser.GameObjects.Graphics, from:MultiBezierCurve) {
+    const fromCurveUnits = from.curveUnits;
+    for (let i = 0; i < this.curveUnits.length; i++) {
+      if (i >= fromCurveUnits.length) break;
+      
+      const myCurveUnit = this.curveUnits[i];
+      const fromCurveUnit = fromCurveUnits[i];
+      const sx = fromCurveUnit.startPoint.x * -1;
+      const sy = fromCurveUnit.startPoint.y;
+      const c1x = fromCurveUnit.controlPoint1.x * -1;
+      const c1y = fromCurveUnit.controlPoint1.y;
+      const c2x = fromCurveUnit.controlPoint2.x * -1;
+      const c2y = fromCurveUnit.controlPoint2.y;
+      const ex = fromCurveUnit.endPoint.x * -1;
+      const ey = fromCurveUnit.endPoint.y;
+      myCurveUnit.startPoint.set(sx, sy);
+      myCurveUnit.controlPoint1.set(c1x, c1y);
+      myCurveUnit.controlPoint2.set(c2x, c2y);
+      myCurveUnit.endPoint.set(ex, ey);
+    }
+    
+    this.draw(graphics);
+  }
+  
+  /**
    * 指定のGraphicsに描画
    */
   public draw(graphics: Phaser.GameObjects.Graphics) {
@@ -67,5 +111,17 @@ class CurveUnit {
       this.controlPoint1,
       this.controlPoint2,
       this.endPoint);
+  }
+  
+  /**
+   * 複製
+   */
+  public deepCopy() {
+    return new CurveUnit(
+      {x: this.startPoint.x, y: this.startPoint.y},
+      {x: this.controlPoint1.x, y: this.controlPoint1.y},
+      {x: this.controlPoint2.x, y: this.controlPoint2.y},
+      {x: this.endPoint.x, y: this.endPoint.y}
+    );
   }
 }
