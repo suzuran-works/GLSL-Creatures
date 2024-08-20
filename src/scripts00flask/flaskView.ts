@@ -36,6 +36,9 @@ export class FlaskView extends Phaser.GameObjects.Container {
     this.drawFlaskOutline();
   }
   
+  /**
+   * シェーダーオブジェクト作成
+   */
   private addShaderObject(shaderKey: string) {
     const width = this.width;
     const height = this.height;

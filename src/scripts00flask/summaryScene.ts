@@ -3,6 +3,9 @@ import {createConfig, FONT_SMARTFONTUI} from "../define.ts";
 import {FlaskView} from "./flaskView.ts";
 import {tweenAsync} from "../utility/tweenAsync.ts";
 import {GetColorCodeTextByRGB} from "../utility/colorUtility.ts";
+import {getShaderKey} from "../utility/assetResourceKeyUtility.ts";
+import {AssetLoader, AssetLoaderSceneModel} from "../utility/assetLoader.ts";
+import {waitMilliSeconds, waitUntil} from "../utility/asyncUtility.ts";
 
 
 /**
@@ -12,7 +15,7 @@ export class SummaryScene extends Phaser.Scene {
     
     public static Key = 'SummaryScene';
     
-    private flaskView!: FlaskView;
+    private flaskView?: FlaskView;
     
     /**
      * コンストラクタ
@@ -30,9 +33,6 @@ export class SummaryScene extends Phaser.Scene {
 
         // サンプルで画像をロード
         this.load.image('logo', '../textures/suzuran_logo_withname.webp');
-        
-        // サンプルでシェーダーテキストをロード
-        this.load.text('sample', '../shaders/shaders00flask/shader_00-00.frag');
     }
     
     /**
@@ -66,10 +66,27 @@ export class SummaryScene extends Phaser.Scene {
         text.setFill(GetColorCodeTextByRGB(180, 180, 180));
         text.setPosition(canvas.width/2, canvas.height - 22);
         
-        // フラスコ
-        this.flaskView = new FlaskView(this, 1000, 1000, 'sample');
-        this.flaskView.setPosition(canvas.width/2, canvas.height/2 -22);
+        // ビュー追加
+        this.addViewAsync().then();
+    }
+    
+    private async addViewAsync() {
         
+        const assetLoaderSceneModel = new AssetLoaderSceneModel([
+            '../shaders/shaders00flask/shader_00-00.frag',
+        ]);
+        const sceneData = { sceneModel: assetLoaderSceneModel };
+        this.scene.launch(AssetLoader.Key, sceneData);
+        
+        await waitUntil(() => assetLoaderSceneModel.done);
+        this.scene.remove(AssetLoader.Key);
+        
+        // フラスコ
+        const canvas = this.game.canvas;
+        const key = getShaderKey(0,0);
+        this.flaskView = new FlaskView(this, 1000, 1000, key);
+        this.flaskView.setPosition(canvas.width/2, canvas.height/2 -22);
+
         tweenAsync(this, {
             targets: this.flaskView,
             duration: 3000,
@@ -81,8 +98,8 @@ export class SummaryScene extends Phaser.Scene {
     }
     
     update() {
-        this.flaskView.updateView();
+        this.flaskView?.updateView();
     }
 }
 
-new Phaser.Game(createConfig([SummaryScene]));
+new Phaser.Game(createConfig([SummaryScene, AssetLoader]));
