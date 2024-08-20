@@ -36,5 +36,6 @@ export const loadAssetsAsync = async (baseScene: Scene, shaderPaths: string[], t
   const sceneData = { sceneModel: assetLoaderSceneModel };
   baseScene.scene.launch(AssetLoader.Key, sceneData);
   await waitUntil(() => assetLoaderSceneModel.done);
-  baseScene.scene.remove(AssetLoader.Key);
+  // NOTE: removeだと完全に削除されて次のlaunchが効かなくなる
+  baseScene.scene.stop(AssetLoader.Key);
 }

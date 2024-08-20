@@ -24,11 +24,18 @@ export class AssetLoaderSceneModel {
    * コンストラクタ
    */
   constructor(shaderTextPaths: string[], texturePaths = new Array<string>()) {
-    console.log("PokerLinesIngameSceneModel constructor");
     this.shaderTextPaths = shaderTextPaths;
     this.texturePaths = texturePaths
   }
 }
+
+/**
+ * キャッシュ
+ */
+const loadCache: Map<
+  string /*fileName*/,
+  string /*key*/
+> = new Map();
 
 /**
  * アセットローダー
@@ -66,15 +73,19 @@ export class AssetLoader extends Scene {
     
     // シェーダーテキストロード
     for (const path of this.sceneModel.shaderTextPaths) {
+      if (loadCache.has(path)) continue;
       const key = getAssetResourceKey(path);
       this.load.text(key, path);
+      loadCache.set(path, key);
       console.log("shader text loaded  key:", key, path);
     }
     
     // テクスチャロード
     for (const path of this.sceneModel.texturePaths) {
+      if (loadCache.has(path)) continue;
       const key = getAssetResourceKey(path);
       this.load.image(key, path);
+      loadCache.set(path, key);
       console.log("texture loaded  key:", key, path);
     }
   }
