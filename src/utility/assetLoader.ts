@@ -23,7 +23,7 @@ export class AssetLoaderSceneModel {
   /**
    * コンストラクタ
    */
-  constructor(shaderTextPaths: string[], texturePaths = []) {
+  constructor(shaderTextPaths: string[], texturePaths = new Array<string>()) {
     console.log("PokerLinesIngameSceneModel constructor");
     this.shaderTextPaths = shaderTextPaths;
     this.texturePaths = texturePaths
@@ -75,7 +75,7 @@ export class AssetLoader extends Scene {
     for (const path of this.sceneModel.texturePaths) {
       const key = getAssetResourceKey(path);
       this.load.image(key, path);
-      console.log("texture loaded  key:", key,path);
+      console.log("texture loaded  key:", key, path);
     }
   }
 

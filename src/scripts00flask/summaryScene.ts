@@ -4,8 +4,8 @@ import {FlaskView} from "./flaskView.ts";
 import {tweenAsync} from "../utility/tweenAsync.ts";
 import {GetColorCodeTextByRGB} from "../utility/colorUtility.ts";
 import {getShaderKey} from "../utility/assetResourceKeyUtility.ts";
-import {AssetLoader, AssetLoaderSceneModel} from "../utility/assetLoader.ts";
-import {waitUntil} from "../utility/asyncUtility.ts";
+import {AssetLoader} from "../utility/assetLoader.ts";
+import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
 
 
 /**
@@ -13,7 +13,12 @@ import {waitUntil} from "../utility/asyncUtility.ts";
  */
 export class SummaryScene extends Phaser.Scene {
     
+    // シーンキー
     public static Key = 'SummaryScene';
+    // カテゴリー番号
+    private readonly category = 0;
+    // シェーダーフォルダ名
+    private readonly shaderFolderName = 'shaders00flask';
     
     private flaskView?: FlaskView;
     
@@ -71,26 +76,19 @@ export class SummaryScene extends Phaser.Scene {
     }
     
     private async addViewAsync() {
-        
-        const assetLoaderSceneModel = new AssetLoaderSceneModel([
-            '../shaders/shaders00flask/shader_00-00.frag',
-        ]);
-        const sceneData = { sceneModel: assetLoaderSceneModel };
-        this.scene.launch(AssetLoader.Key, sceneData);
-        
-        await waitUntil(() => assetLoaderSceneModel.done);
-        this.scene.remove(AssetLoader.Key);
+        // シェーダーをロード
+        await loadSingleShaderTextAsync(this, this.shaderFolderName, this.category, 0);
         
         // フラスコ
         const canvas = this.game.canvas;
-        const key = getShaderKey(0,0);
+        const key = getShaderKey(this.category,0);
         this.flaskView = new FlaskView(this, 1000, 1000, key);
         this.flaskView.setPosition(canvas.width/2, canvas.height/2 -22);
 
         tweenAsync(this, {
             targets: this.flaskView,
             duration: 3000,
-            x: 540,
+            y: 530,
             repeat: -1,
             yoyo: true,
             ease: 'Sine.easeInOut'
