@@ -33,7 +33,7 @@ void main( void ) {
     }
     
     // f を 1~0 の範囲に収める
-    f = smoothstep(0.022, 1.0, f);
+    f = smoothstep(0.06, 1.0, f);
     
     vec3 color = vec3(0.0, f, f);
     
