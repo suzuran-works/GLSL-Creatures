@@ -37,16 +37,16 @@ export class FlaskView extends Phaser.GameObjects.Container {
     
     // 自身のサイズ
     this.setSize(width, height);
-   
-    // デバッグビュー
-    this.addBaseDebugView();
-
+    
     // シェーダーオブジェクト作成
     this.addShaderObject(shaderKey);
     
     // フラスコの輪郭を描画
     this.addFlaskOutline(flaskLeftOutlineJsonKey);
     this.drawFlaskOutline();
+
+    // デバッグビュー
+    this.addBaseDebugView();
   }
   
   /**
@@ -64,20 +64,35 @@ export class FlaskView extends Phaser.GameObjects.Container {
     this.flaskOutlineGraphics = this.scene.add.graphics();
     this.add(this.flaskOutlineGraphics);
 
-    // アウトライン左側
-    this.flaskOutlineLeft = new MultiBezierCurve(
-      4,
-      {x:0, y:this.height/2},
-      {x:0, y:-this.height/2}
-    );
+    const isImportData = jsonKey != "";
+    const isEditMode = isLocalhost();
+    const curveUnitCount = 4;
+
     // アウトライン左側のデータ読み書きを用意
-    this.flaskOutlineLeftFileAdapter = new MultiBezierCurveFileAdapter(this.scene, this.flaskOutlineLeft);
-    // アウトライン左側を読み込み
-    this.flaskOutlineLeftFileAdapter.importData(jsonKey);
+    this.flaskOutlineLeftFileAdapter = new MultiBezierCurveFileAdapter(this.scene);
+    
+    // 新規作成
+    if (!isImportData) {
+      // アウトライン左側
+      this.flaskOutlineLeft = new MultiBezierCurve(
+        curveUnitCount,
+        {x:0, y:this.height/2},
+        {x:0, y:-this.height/2}
+      );      
+    }
+    // データ読み込み
+    else {
+      this.flaskOutlineLeft = this.flaskOutlineLeftFileAdapter.createByImportData(jsonKey, curveUnitCount);
+    }
+    
+    // 書き出し対象登録
+    this.flaskOutlineLeftFileAdapter.registerExportTarget(this.flaskOutlineLeft);
+    
     // ローカルホストの場合はエディタを有効化
-    if (isLocalhost()) {
+    if (isEditMode) {
       this.flaskOutlineLeftEditor = new MultiBezierCurveEditor(this.scene, this, this.flaskOutlineLeft);
     }
+    
     // アウトライン右側(コピー)
     this.flaskOutlineRight = this.flaskOutlineLeft.deepCopy();
   }

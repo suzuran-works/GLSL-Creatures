@@ -19,12 +19,11 @@ export type MultiBezierCurveUnitData = {
 export class MultiBezierCurveFileAdapter {
   
   private readonly scene!: Phaser.Scene;
-  private readonly multiBezierCurve!: MultiBezierCurve;
   private readonly exportFileName = "tempMultiBezierCurveData.json";
+  private exportTarget?: MultiBezierCurve;
   
-  constructor(scene: Phaser.Scene, multiBezierCurve: MultiBezierCurve) {
+  constructor(scene: Phaser.Scene) {
     this.scene = scene;
-    this.multiBezierCurve = multiBezierCurve;
     
     console.warn("sキー押下でデータをMultiBezierCurveデータダウンロード実行");
     const sKey = scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S);
@@ -36,11 +35,14 @@ export class MultiBezierCurveFileAdapter {
   /**
    * 読み込み
    */
-  public importData(jsonKey:string) {
+  public createByImportData(jsonKey:string, fmtUnitCount:number) {
     const data:MultiBezierCurveData = this.scene.cache.json.get(getAssetResourceKey(jsonKey));
-    
-    const curveUnits = this.multiBezierCurve.curveUnits;
-    for (let i = 0; i < data.curveUnits.length; i++) {
+    const dataUnitCount = data.curveUnits.length;
+    const addUnitCount = fmtUnitCount - dataUnitCount;
+    const unitCount = dataUnitCount + addUnitCount;
+    const target = new MultiBezierCurve(unitCount, {x:0, y:0}, {x:0, y:0});
+    const curveUnits = target.curveUnits;
+    for (let i = 0; i < unitCount; i++) {
       if (i >= curveUnits.length) break;
       const curveUnit = curveUnits[i];
       const unitData = data.curveUnits[i];
@@ -53,15 +55,27 @@ export class MultiBezierCurveFileAdapter {
       curveUnit.endPoint.x = unitData.endPoint.x;
       curveUnit.endPoint.y = unitData.endPoint.y;
     }
+    return target;
+  }
+  
+  /**
+   * 書き出し対象登録
+   */
+  public registerExportTarget(target:MultiBezierCurve) {
+    this.exportTarget = target;
   }
   
   /**
    * 書き出し
    */
-  public exportData() {
+  private exportData() {
     console.warn("MultiBezierCurveデータエクスポート...");
+    if (this.exportTarget === undefined) {
+      console.error("exportTargetが未設定");
+      return;
+    }
 
-    const curveUnits = this.multiBezierCurve.curveUnits;
+    const curveUnits = this.exportTarget.curveUnits;
     const curveUnitDatas: MultiBezierCurveUnitData[] = [];
     for (let i = 0; i < curveUnits.length; i++) {
       const curveUnit = curveUnits[i];

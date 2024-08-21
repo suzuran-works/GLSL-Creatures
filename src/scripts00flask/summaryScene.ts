@@ -43,11 +43,11 @@ export class SummaryScene extends Phaser.Scene {
      */
     create() {
         console.log('SummaryScene create');
-
+        this.createAsync().then();
+    }
+    
+    private async createAsync() {
         const canvas = this.game.canvas;
-
-        // 画像
-        //this.add.image(canvas.width/2, canvas.height/2, 'logo');
 
         // URLからパラメータを取得
         const params = new URLSearchParams(window.location.search);
@@ -59,6 +59,9 @@ export class SummaryScene extends Phaser.Scene {
             console.log(`index: ${idx}`);
             msg = `フラスコの中の何か: ${idx}`;
         }
+        
+        // ビュー追加
+        await this.addViewAsync();
 
         // テキスト
         const text = this.add.text(0, 0, msg, {
@@ -68,9 +71,6 @@ export class SummaryScene extends Phaser.Scene {
         text.setOrigin(0.5, 0.5);
         text.setFill(GetColorCodeTextByRGB(180, 180, 180));
         text.setPosition(canvas.width/2, canvas.height - 22);
-        
-        // ビュー追加
-        this.addViewAsync().then();
     }
     
     private async addViewAsync() {
@@ -79,12 +79,12 @@ export class SummaryScene extends Phaser.Scene {
         
         // フラスコ
         const canvas = this.game.canvas;
-        const width = 1000;
-        const height = 1000;
+        const width = canvas.width;
+        const height = canvas.height;
         const shaderKey = getShaderKey(CATEGORY,0);
         const jsonKey = getAssetResourceKey(PATH_JSONS.FLASK_LEFT_OUTLINE_A);
         this.flaskView = new FlaskView(this, width, height, shaderKey, jsonKey);
-        this.flaskView.setPosition(canvas.width/2, canvas.height/2 -22);
+        this.flaskView.setPosition(canvas.width/2, canvas.height/2);
 
         /*
         tweenAsync(this, {
