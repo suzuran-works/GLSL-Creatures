@@ -1,4 +1,7 @@
 
+// 編集モード
+export const EDIT_MODE = false;
+
 // カテゴリー番号
 export const CATEGORY = 0;
 

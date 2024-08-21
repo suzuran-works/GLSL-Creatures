@@ -44,6 +44,7 @@ export class MultiBezierCurveFileAdapter {
     const curveUnits = target.curveUnits;
     for (let i = 0; i < unitCount; i++) {
       if (i >= curveUnits.length) break;
+      if (i >= dataUnitCount) break;
       const curveUnit = curveUnits[i];
       const unitData = data.curveUnits[i];
       curveUnit.startPoint.x = unitData.startPoint.x;

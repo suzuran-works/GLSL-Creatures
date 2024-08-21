@@ -70,7 +70,7 @@ export class SummaryScene extends Phaser.Scene {
         });
         text.setOrigin(0.5, 0.5);
         text.setFill(GetColorCodeTextByRGB(180, 180, 180));
-        text.setPosition(canvas.width/2, canvas.height - 22);
+        text.setPosition(canvas.width/2, canvas.height * 0.95);
     }
     
     private async addViewAsync() {
