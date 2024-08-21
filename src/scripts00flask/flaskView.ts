@@ -3,6 +3,8 @@ import {GetColorCodeByRGB} from "../utility/colorUtility.ts";
 import {MultiBezierCurve} from "../utility/multiBezierCurve.ts";
 import {MultiBezierCurveEditor} from "../utility/multiBezierCurveEditor.ts";
 import {ShaderGameObject} from "../utility/shaderGameObject.ts";
+import {isLocalhost} from "../utility/localhostUtility.ts";
+import {MultiBezierCurveFileAdapter} from "../utility/multiBezierCurveFileAdapter.ts";
 
 /**
  * フラスコビュー
@@ -15,14 +17,21 @@ export class FlaskView extends Phaser.GameObjects.Container {
   private flaskOutlineRight!: MultiBezierCurve;
   
   // @ts-ignore
-  private flaskOutlineLeftEditor!: MultiBezierCurveEditor;
-  
-  private isEditMode = true;
+  private flaskOutlineLeftEditor?: MultiBezierCurveEditor;
+  // @ts-ignore
+  private flaskOutlineLeftFileAdapter?: MultiBezierCurveFileAdapter;
   
   /**
    * コンストラクタ
    */
-  constructor(scene: Phaser.Scene, width: number, height: number, shaderKey: string) {
+  constructor(
+    scene: Phaser.Scene,
+    width: number,
+    height: number,
+    shaderKey: string,
+    flaskLeftOutlineJsonKey:string
+  ) {
+    
     super(scene, 0, 0);
     scene.add.existing(this);
     
@@ -36,6 +45,7 @@ export class FlaskView extends Phaser.GameObjects.Container {
     this.addShaderObject(shaderKey);
     
     // フラスコの輪郭を描画
+    this.addFlaskOutline(flaskLeftOutlineJsonKey);
     this.drawFlaskOutline();
   }
   
@@ -49,32 +59,44 @@ export class FlaskView extends Phaser.GameObjects.Container {
     this.add(shaderObject);
   }
   
-  private drawFlaskOutline() {
-    if (this.flaskOutlineGraphics === undefined) {
-      // Graphicsオブジェクトを作成
-      this.flaskOutlineGraphics = this.scene.add.graphics();
-      this.add(this.flaskOutlineGraphics); 
-      
-      // アウトライン左側
-      this.flaskOutlineLeft = new MultiBezierCurve(
-        4,
-        {x:0, y:this.height/2},
-        {x:0, y:-this.height/2}
-      );
-      if (this.isEditMode) this.flaskOutlineLeftEditor = new MultiBezierCurveEditor(this.scene, this, this.flaskOutlineLeft);
-      
-      // アウトライン右側(コピー)
-      this.flaskOutlineRight = this.flaskOutlineLeft.deepCopy();
+  private addFlaskOutline(jsonKey: string) {
+    // Graphicsオブジェクトを作成
+    this.flaskOutlineGraphics = this.scene.add.graphics();
+    this.add(this.flaskOutlineGraphics);
+
+    // アウトライン左側
+    this.flaskOutlineLeft = new MultiBezierCurve(
+      4,
+      {x:0, y:this.height/2},
+      {x:0, y:-this.height/2}
+    );
+    // アウトライン左側のデータ読み書きを用意
+    this.flaskOutlineLeftFileAdapter = new MultiBezierCurveFileAdapter(this.scene, this.flaskOutlineLeft);
+    // アウトライン左側を読み込み
+    this.flaskOutlineLeftFileAdapter.importData(jsonKey);
+    // ローカルホストの場合はエディタを有効化
+    if (isLocalhost()) {
+      this.flaskOutlineLeftEditor = new MultiBezierCurveEditor(this.scene, this, this.flaskOutlineLeft);
     }
-    
+    // アウトライン右側(コピー)
+    this.flaskOutlineRight = this.flaskOutlineLeft.deepCopy();
+  }
+  
+  /**
+   * フラスコ線を描画
+   */
+  private drawFlaskOutline() {
     this.flaskOutlineGraphics.clear();
     this.flaskOutlineGraphics.lineStyle(4, GetColorCodeByRGB(155,155,155), 1);
     this.flaskOutlineLeft.draw(this.flaskOutlineGraphics);
     this.flaskOutlineRight.drawLRFlip(this.flaskOutlineGraphics, this.flaskOutlineLeft);
   }
   
+  /**
+   * フレーム更新
+   */
   public updateView() {
-    if (!this.isEditMode) return;
+    if (!this.flaskOutlineLeftEditor) return;
     this.drawFlaskOutline();
   }
   

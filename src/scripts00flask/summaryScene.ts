@@ -2,9 +2,11 @@ import Phaser from 'phaser';
 import {createConfig, FONT_SMARTFONTUI} from "../define.ts";
 import {FlaskView} from "./flaskView.ts";
 import {GetColorCodeTextByRGB} from "../utility/colorUtility.ts";
-import {getShaderKey} from "../utility/assetResourceKeyUtility.ts";
+import {getAssetResourceKey, getShaderKey} from "../utility/assetResourceKeyUtility.ts";
 import {AssetLoader} from "../utility/assetLoader.ts";
 import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
+import {CATEGORY, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
+import {preloadJson} from "../utility/preloadUtility.ts";
 
 
 /**
@@ -14,10 +16,7 @@ export class SummaryScene extends Phaser.Scene {
     
     // シーンキー
     public static Key = 'SummaryScene';
-    // カテゴリー番号
-    private readonly category = 0;
-    // シェーダーフォルダ名
-    private readonly shaderFolderName = 'shaders00flask';
+    
     
     private flaskView?: FlaskView;
     
@@ -34,9 +33,9 @@ export class SummaryScene extends Phaser.Scene {
      */
     preload() {
         console.log('SummaryScene preload');
-
-        // サンプルで画像をロード
-        this.load.image('logo', '../textures/suzuran_logo_withname.webp');
+        
+        // フラスコ用Jsonロード
+        preloadJson(this, PATH_JSONS.FLASK_LEFT_OUTLINE_A);
     }
     
     /**
@@ -76,14 +75,15 @@ export class SummaryScene extends Phaser.Scene {
     
     private async addViewAsync() {
         // シェーダーをロード
-        await loadSingleShaderTextAsync(this, this.shaderFolderName, this.category, 0);
+        await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, 0);
         
         // フラスコ
         const canvas = this.game.canvas;
         const width = 1000;
         const height = 1000;
-        const key = getShaderKey(this.category,0);
-        this.flaskView = new FlaskView(this, width, height, key);
+        const shaderKey = getShaderKey(CATEGORY,0);
+        const jsonKey = getAssetResourceKey(PATH_JSONS.FLASK_LEFT_OUTLINE_A);
+        this.flaskView = new FlaskView(this, width, height, shaderKey, jsonKey);
         this.flaskView.setPosition(canvas.width/2, canvas.height/2 -22);
 
         /*

@@ -15,8 +15,10 @@ export const loadSingleShaderTextAsync = async (baseScene: Scene, folderName: st
  * 指定ファイルパスについてロード
  */
 export const loadSingleAssetAsync = async (baseScene: Scene, filePath: string) => {
-  let shaderPaths:string[] = [];
-  let texturePaths:string[] = [];
+  const shaderPaths:string[] = [];
+  const texturePaths:string[] = [];
+  const jsonPaths:string[] = [];
+  
   
   if (filePath.endsWith(".frag") || filePath.endsWith(".vert")) {
     shaderPaths.push(filePath);
@@ -24,15 +26,27 @@ export const loadSingleAssetAsync = async (baseScene: Scene, filePath: string) =
   if (filePath.endsWith(".png") || filePath.endsWith(".webp")) {
     texturePaths.push(filePath);
   }
+  if (filePath.endsWith(".json")) {
+    jsonPaths.push(filePath);
+  }
   
-  await loadAssetsAsync(baseScene, shaderPaths, texturePaths);
+  await loadAssetsAsync(baseScene, shaderPaths, texturePaths, jsonPaths);
 }
 
 /**
  * 指定ファイルパス配列についてロード
  */
-export const loadAssetsAsync = async (baseScene: Scene, shaderPaths: string[], texturePaths: string[]) => {
-  const assetLoaderSceneModel = new AssetLoaderSceneModel(shaderPaths, texturePaths);
+export const loadAssetsAsync = async (
+  baseScene: Scene,
+  shaderPaths: string[],
+  texturePaths: string[],
+  jsonPaths: string[]
+) => {
+  const assetLoaderSceneModel = new AssetLoaderSceneModel(
+    shaderPaths,
+    texturePaths,
+    jsonPaths
+  );
   const sceneData = { sceneModel: assetLoaderSceneModel };
   baseScene.scene.launch(AssetLoader.Key, sceneData);
   await waitUntil(() => assetLoaderSceneModel.done);

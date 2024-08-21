@@ -19,13 +19,16 @@ export class AssetLoaderSceneModel {
   public readonly shaderTextPaths: string[] = [];
   // テクスチャ
   public readonly texturePaths: string[] = [];
+  // json
+  public readonly jsonPaths: string[] = [];
   
   /**
    * コンストラクタ
    */
-  constructor(shaderTextPaths: string[], texturePaths = new Array<string>()) {
+  constructor(shaderTextPaths: string[], texturePaths:string[], jsonPaths: string[]) {
     this.shaderTextPaths = shaderTextPaths;
-    this.texturePaths = texturePaths
+    this.texturePaths = texturePaths;
+    this.jsonPaths = jsonPaths;
   }
 }
 
@@ -87,6 +90,15 @@ export class AssetLoader extends Scene {
       this.load.image(key, path);
       loadCache.set(path, key);
       console.log("texture loaded:", key, path);
+    }
+    
+    // jsonロード
+    for (const path of this.sceneModel.jsonPaths) {
+      if (loadCache.has(path)) continue;
+      const key = getAssetResourceKey(path);
+      this.load.json(key, path);
+      loadCache.set(path, key);
+      console.log("json loaded:", key, path);
     }
   }
 
