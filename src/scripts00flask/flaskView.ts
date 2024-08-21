@@ -30,7 +30,8 @@ export class FlaskView extends Phaser.GameObjects.Container {
     width: number,
     height: number,
     shaderKey: string,
-    flaskLeftOutlineJsonKey:string
+    flaskLeftOutlineJsonKey:string,
+    shaderObjectOffSetY: number = 180
   ) {
     
     super(scene, 0, 0);
@@ -40,41 +41,28 @@ export class FlaskView extends Phaser.GameObjects.Container {
     this.setSize(width, height);
     
     // シェーダーオブジェクト作成
-    this.addShaderObject(shaderKey);
+    this.addShaderObject(shaderKey, shaderObjectOffSetY);
     
     // フラスコの輪郭を描画
     this.addFlaskOutline(flaskLeftOutlineJsonKey);
     this.drawFlaskOutline();
 
     // デバッグビュー
-    this.addBaseDebugView();
+    if (EDIT_MODE) this.addDebugRectView(0,0,width,height);
   }
   
   /**
    * シェーダーオブジェクト作成
    */
-  private addShaderObject(shaderKey: string) {
+  private addShaderObject(shaderKey: string, offsetY:number) {
     const width = this.width;
     const height = this.height;
     const shaderObject = new ShaderGameObject(this.scene, width, height, shaderKey);
-    const posY = height / 6;
-    shaderObject.setPosition(0, posY);
+    shaderObject.setPosition(0, offsetY);
     this.add(shaderObject);
     
-    if (EDIT_MODE) {
-      const color = GetColorCodeByRGB(255,255,255);
-      const alpha = 0.1;
-      const rect = new Phaser.GameObjects.Rectangle(
-        this.scene,
-        shaderObject.x, 
-        shaderObject.y,
-        width * 0.5,
-        height * 0.5,
-        color,
-        alpha
-      );
-      this.add(rect);
-    }
+    // デバッグビュー
+    if (EDIT_MODE) this.addDebugRectView(shaderObject.x, shaderObject.y, width * 0.5, height * 0.5)
   }
   
   private addFlaskOutline(jsonKey: string) {
@@ -136,10 +124,10 @@ export class FlaskView extends Phaser.GameObjects.Container {
   /**
    * 自身のサイズと位置に基づいてデバッグビューを追加
    */
-  private addBaseDebugView() {
+  private addDebugRectView(x:number, y:number, w:number, h:number) {
     const color = GetColorCodeByRGB(255,255,255);
-    const alpha = 0.0;
-    const rect = new Phaser.GameObjects.Rectangle(this.scene, 0, 0, this.width, this.height, color, alpha);
+    const alpha = 0.1;
+    const rect = new Phaser.GameObjects.Rectangle(this.scene, x, y, w, h, color, alpha);
     this.add(rect);
   }
 }
