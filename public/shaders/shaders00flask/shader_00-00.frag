@@ -8,6 +8,8 @@ precision mediump float;
 uniform float time;
 // resolution
 uniform vec2 resolution;
+// alpha(custom)
+uniform float uAlpha;
 // pixel position (phaser game object)
 varying vec2 fragCoord;
 
@@ -36,6 +38,7 @@ void main( void ) {
     f = smoothstep(0.06, 1.0, f);
     
     vec3 color = vec3(0.0, f, f);
+    color *= uAlpha;
     
     gl_FragColor = vec4(color, 1.0);
 }

@@ -17,6 +17,8 @@ export class FlaskView extends Phaser.GameObjects.Container {
   private flaskOutlineLeft!: MultiBezierCurve;
   private flaskOutlineRight!: MultiBezierCurve;
   
+  private shaderGameObject!: ShaderGameObject;
+  
   // @ts-ignore
   private flaskOutlineLeftEditor?: MultiBezierCurveEditor;
   // @ts-ignore
@@ -57,12 +59,12 @@ export class FlaskView extends Phaser.GameObjects.Container {
   private addShaderObject(shaderKey: string, offsetY:number) {
     const width = this.width;
     const height = this.height;
-    const shaderObject = new ShaderGameObject(this.scene, width, height, shaderKey);
-    shaderObject.setPosition(0, offsetY);
-    this.add(shaderObject);
+    this.shaderGameObject = new ShaderGameObject(this.scene, width, height, shaderKey);
+    this.shaderGameObject.setPosition(0, offsetY);
+    this.add(this.shaderGameObject);
     
     // デバッグビュー
-    if (EDIT_MODE) this.addDebugRectView(shaderObject.x, shaderObject.y, width * 0.5, height * 0.5)
+    if (EDIT_MODE) this.addDebugRectView(this.shaderGameObject.x, this.shaderGameObject.y, width * 0.5, height * 0.5)
   }
   
   private addFlaskOutline(jsonKey: string) {
@@ -117,8 +119,8 @@ export class FlaskView extends Phaser.GameObjects.Container {
    * フレーム更新
    */
   public updateView() {
-    if (!this.flaskOutlineLeftEditor) return;
-    this.drawFlaskOutline();
+    this.shaderGameObject.setUniformAlpha(1.0);
+    if (this.flaskOutlineLeftEditor) this.drawFlaskOutline();
   }
   
   /**
