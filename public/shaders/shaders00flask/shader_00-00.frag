@@ -38,7 +38,10 @@ void main( void ) {
     f = smoothstep(0.06, 1.0, f);
     
     vec3 color = vec3(0.0, f, f);
-    color *= uAlpha;
     
-    gl_FragColor = vec4(color, 1.0);
+    // ブレンドモードの指定ができない?のでこうすることで透明度を変更できる
+    // rgbの値をalphaユニフォーム変数で乗算
+    color *= uAlpha;
+    // gl_FragColorに渡す第四引数は0 (この値の意味は不明)
+    gl_FragColor = vec4(color, 0);
 }

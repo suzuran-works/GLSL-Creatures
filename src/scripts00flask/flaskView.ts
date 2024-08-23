@@ -119,7 +119,7 @@ export class FlaskView extends Phaser.GameObjects.Container {
    * フレーム更新
    */
   public updateView() {
-    this.shaderGameObject.setUniformAlpha(1.0);
+    this.shaderGameObject.setUniformAlpha(this.alpha);
     if (this.flaskOutlineLeftEditor) this.drawFlaskOutline();
   }
   

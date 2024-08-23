@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import {createConfig, FONT_SMARTFONTUI} from "../define.ts";
 import {FlaskView} from "./flaskView.ts";
-import {GetColorCodeTextByRGB} from "../utility/colorUtility.ts";
+import {GetColorCodeByRGB, GetColorCodeTextByRGB} from "../utility/colorUtility.ts";
 import {getAssetResourceKey, getShaderKey} from "../utility/assetResourceKeyUtility.ts";
 import {AssetLoader} from "../utility/assetLoader.ts";
 import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
@@ -63,6 +63,8 @@ export class SummaryScene extends Phaser.Scene {
       console.log(`index: ${idx}`);
       msg = `フラスコの中の何か: ${idx}`;
     }
+    
+    this.add.rectangle(0, canvas.height/2, 1000, 1000, GetColorCodeByRGB(20,20,20), 1);
 
     // ビュー追加
     await this.addViewAsync();
@@ -90,7 +92,6 @@ export class SummaryScene extends Phaser.Scene {
     this.flaskView = new FlaskView(this, width, height, shaderKey, jsonKey);
     this.flaskView.setPosition(canvas.width/2, canvas.height/2);
 
-    return;
     tweenAsync(this, {
         targets: this.flaskView,
         duration: 2000,
