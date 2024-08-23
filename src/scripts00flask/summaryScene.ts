@@ -8,7 +8,7 @@ import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
 import {CATEGORY, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
 import {tweenAsync} from "../utility/tweenAsync.ts";
-import {BackgroundView} from "../utility/backgroundView.ts";
+import {BackgroundView} from "../views/backgroundView.ts";
 
 
 /**
