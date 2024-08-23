@@ -7,6 +7,7 @@ import {AssetLoader} from "../utility/assetLoader.ts";
 import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
 import {CATEGORY, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
+import {tweenAsync} from "../utility/tweenAsync.ts";
 
 
 /**
@@ -43,6 +44,9 @@ export class SummaryScene extends Phaser.Scene {
    */
   create() {
     console.log('SummaryScene create');
+    
+    // パラメータ指定がある場合はそれを優先的に表示
+    
     this.createAsync().then();
   }
 
@@ -86,16 +90,18 @@ export class SummaryScene extends Phaser.Scene {
     this.flaskView = new FlaskView(this, width, height, shaderKey, jsonKey);
     this.flaskView.setPosition(canvas.width/2, canvas.height/2);
 
-    /*
+    return;
     tweenAsync(this, {
         targets: this.flaskView,
-        duration: 3000,
-        y: 540,
+        duration: 2000,
+        scaleX: 0.3,
+        scaleY: 0.3,
+        alpha: 0,
         repeat: -1,
         yoyo: true,
         ease: 'Sine.easeInOut'
     }).then();
-     */
+    
   }
 
   update() {
