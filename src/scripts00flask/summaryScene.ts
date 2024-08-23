@@ -8,6 +8,7 @@ import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
 import {CATEGORY, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
 import {tweenAsync} from "../utility/tweenAsync.ts";
+import {BackgroundView} from "../utility/backgroundView.ts";
 
 
 /**
@@ -44,6 +45,9 @@ export class SummaryScene extends Phaser.Scene {
    */
   create() {
     console.log('SummaryScene create');
+
+    // 背景
+    new BackgroundView(this, GetColorCodeByRGB(0, 0, 0));
     
     // パラメータ指定がある場合はそれを優先的に表示
     
@@ -64,8 +68,6 @@ export class SummaryScene extends Phaser.Scene {
       msg = `フラスコの中の何か: ${idx}`;
     }
     
-    this.add.rectangle(0, canvas.height/2, 1000, 1000, GetColorCodeByRGB(20,20,20), 1);
-
     // ビュー追加
     await this.addViewAsync();
 
@@ -95,14 +97,13 @@ export class SummaryScene extends Phaser.Scene {
     tweenAsync(this, {
         targets: this.flaskView,
         duration: 2000,
-        scaleX: 0.3,
-        scaleY: 0.3,
-        alpha: 0,
+        //scaleX: 0.3,
+        //scaleY: 0.3,
+        alpha: 1,
         repeat: -1,
         yoyo: true,
         ease: 'Sine.easeInOut'
     }).then();
-    
   }
 
   update() {

@@ -39,9 +39,17 @@ void main( void ) {
     
     vec3 color = vec3(0.0, f, f);
     
-    // ブレンドモードの指定ができない?のでこうすることで透明度を変更できる
-    // rgbの値をalphaユニフォーム変数で乗算
-    color *= uAlpha;
-    // gl_FragColorに渡す第四引数は0 (この値の意味は不明)
-    gl_FragColor = vec4(color, 0);
+    // 意図したいブレンドモード
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // finalColor = srcAlpha * srcColor + (1 - srcAlpha) * dstColor;
+    // src 描画元(これから描画されようとする色)
+    // dst 描画先(既に描画されている色)
+    
+    // rgbの値をalpha値としてのユニフォーム変数uAlphaで乗算
+    // gl_FragColorに渡す第四引数は感覚的に次の通りとなる。
+    // colorが黒の場合
+    // 0.0: 黒い透明を完全に透明にする。(既に描画されているブレンド割合が1)
+    // 1.0: 黒い部分を黒く描画する。(既に描画されている色をブレンド割合が無)
+    // なので通常は0にしておくと意図的なブレンドになる
+    gl_FragColor = vec4(color * uAlpha, 0.0);
 }
