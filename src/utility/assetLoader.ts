@@ -74,34 +74,38 @@ export class AssetLoader extends Scene {
   preload() {
     console.log("AssetLoader preload");
     
-    // シェーダーテキストロード
-    for (const path of this.sceneModel.shaderTextPaths) {
-      if (loadCache.has(path)) continue;
-      const key = getAssetResourceKey(path);
-      this.load.text(key, path);
-      loadCache.set(path, key);
-      console.log("shader text loaded:", key, path);
+    try {
+      
+      // シェーダーテキストロード
+      for (const path of this.sceneModel.shaderTextPaths) {
+        if (loadCache.has(path)) continue;
+        const key = getAssetResourceKey(path);
+        this.load.text(key, path);
+        loadCache.set(path, key);
+        console.log("shader text loaded:", key, path);
+      }
+
+      // テクスチャロード
+      for (const path of this.sceneModel.texturePaths) {
+        if (loadCache.has(path)) continue;
+        const key = getAssetResourceKey(path);
+        this.load.image(key, path);
+        loadCache.set(path, key);
+        console.log("texture loaded:", key, path);
+      }
+
+      // jsonロード
+      for (const path of this.sceneModel.jsonPaths) {
+        if (loadCache.has(path)) continue;
+        const key = getAssetResourceKey(path);
+        this.load.json(key, path);
+        loadCache.set(path, key);
+        console.log("json loaded:", key, path);
+      }
+      
+    } catch (e) {
+      console.error(e);
     }
-    
-    // テクスチャロード
-    for (const path of this.sceneModel.texturePaths) {
-      if (loadCache.has(path)) continue;
-      const key = getAssetResourceKey(path);
-      this.load.image(key, path);
-      loadCache.set(path, key);
-      console.log("texture loaded:", key, path);
-    }
-    
-    // jsonロード
-    for (const path of this.sceneModel.jsonPaths) {
-      if (loadCache.has(path)) continue;
-      const key = getAssetResourceKey(path);
-      this.load.json(key, path);
-      loadCache.set(path, key);
-      console.log("json loaded:", key, path);
-    }
-    
-    console.log("AssetLoader failCount:", this.load.totalFailed);
   }
 
   /**
