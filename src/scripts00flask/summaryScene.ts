@@ -9,6 +9,8 @@ import {CATEGORY, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
 import {tweenAsync} from "../utility/tweenAsync.ts";
 import {BackgroundView} from "../commonViews/backgroundView.ts";
+import {MuseumSystem} from "../commonSystems/museumSystem.ts";
+import {BackButton} from "../commonViews/backButton.ts";
 
 
 /**
@@ -18,8 +20,13 @@ export class SummaryScene extends Phaser.Scene {
 
   // シーンキー
   public static Key = 'SummaryScene';
-
-
+  
+  // 戻るボタン
+  private backButton!: BackButton;
+  
+  // 表示システム
+  private museumSystem!: MuseumSystem;
+  
   private flaskView?: FlaskView;
 
   /**
@@ -48,10 +55,20 @@ export class SummaryScene extends Phaser.Scene {
 
     // 背景
     new BackgroundView(this, GetColorCodeByRGB(0, 0, 0));
+    // 戻るボタン
+    this.backButton = new BackButton(this, GetColorCodeByRGB(78,78,78), 0.5);
+    
+    // 表示システム
+    this.museumSystem = new MuseumSystem(this);
     
     // パラメータ指定がある場合はそれを優先的に表示
     
     this.createAsync().then();
+
+    // 戻る押下時
+    this.backButton.onClick.subscribe(() => {
+      console.log('onClick back button');
+    });
   }
 
   private async createAsync() {
@@ -69,7 +86,7 @@ export class SummaryScene extends Phaser.Scene {
     }
     
     // ビュー追加
-    await this.addViewAsync();
+    //await this.addViewAsync();
 
     // テキスト
     const text = this.add.text(0, 0, msg, {
@@ -79,6 +96,9 @@ export class SummaryScene extends Phaser.Scene {
     text.setOrigin(0.5, 0.5);
     text.setFill(GetColorCodeTextByRGB(180, 180, 180));
     text.setPosition(canvas.width/2, canvas.height * 0.95);
+    
+    // 仮
+    await this.backButton.showAsync(2000);
   }
 
   private async addViewAsync() {
@@ -107,6 +127,11 @@ export class SummaryScene extends Phaser.Scene {
   }
 
   update() {
+    // 前のフレームからの経過時間
+    const deltaTimeMs = this.game.loop.delta;
+    
+    this.museumSystem.systemUpdate(deltaTimeMs);
+    
     this.flaskView?.updateView();
   }
 }

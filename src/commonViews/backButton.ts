@@ -42,12 +42,15 @@ export class BackButton extends Phaser.GameObjects.Container {
   
   /**
    * 有効化・無効化
-   * alpha
+   * alphaの値を利用する
    */
   public setEnable(isEnable: boolean) {
     this.alpha = isEnable ? 1 : 0;
   }
   
+  /**
+   * 表示
+   */
   public async showAsync(delay = 0) {
     await tweenAsync(this.scene, {
       targets: this,
@@ -57,6 +60,9 @@ export class BackButton extends Phaser.GameObjects.Container {
     });
   }
   
+  /**
+   * 非表示(無効化)
+   */
   public async hideAsync() {
     await tweenAsync(this.scene, {
       targets: this,
