@@ -91,11 +91,9 @@ export class SummaryScene extends Phaser.Scene {
     // 仮
     await this.backButton.showAsync(2000);
 
-    // シェーダーをロード
-    await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, 99);
-    const shaderKey = getShaderKey(CATEGORY,99);
-    const fragShaderText = this.cache.text.get(shaderKey);
-    console.log(fragShaderText);
+    // シェーダーロード失敗テスト
+    const m = await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, 99);
+    console.log("failCount:", m.failCount);
   }
 
   private async addViewAsync() {

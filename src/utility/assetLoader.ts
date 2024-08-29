@@ -14,6 +14,8 @@ export type AssetLoaderSceneData = {
 export class AssetLoaderSceneModel {
   // 完了か
   public done = false;
+  // 失敗数
+  public failCount = 0;
   
   // シェーダーテキスト
   public readonly shaderTextPaths: string[] = [];
@@ -78,6 +80,7 @@ export class AssetLoader extends Scene {
       console.log("load complete totalComplete", info.totalComplete);
       console.log("load complete totalFailed", info.totalFailed);
       this.sceneModel.done = true;
+      this.sceneModel.failCount = info.totalFailed;
     });
     
     // シェーダーテキストロード
