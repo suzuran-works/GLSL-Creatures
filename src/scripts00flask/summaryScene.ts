@@ -12,6 +12,8 @@ import {BackgroundView} from "../commonViews/backgroundView.ts";
 import {MuseumSystem} from "../commonSystems/museumSystem.ts";
 import {BackButton} from "../commonViews/backButton.ts";
 import {TextLabel} from "../commonViews/textLabel.ts";
+import {FpsView} from "../commonViews/fpsView.ts";
+import {isLocalhost} from "../utility/localhostUtility.ts";
 
 
 /**
@@ -71,6 +73,8 @@ export class SummaryScene extends Phaser.Scene {
     this.textLabel = new TextLabel(this, GetColorCodeTextByRGB(180, 180, 180), 1, 30);
     this.textLabel.setPosition(canvas.width/2, canvas.height * 0.95);
     this.textLabel.setText("フラスコの中のGLSL");
+    // FPS表示
+    if (isLocalhost()) new FpsView(this);
     
     // 表示システム
     this.museumSystem = new MuseumSystem(this);
@@ -124,7 +128,7 @@ export class SummaryScene extends Phaser.Scene {
   update() {
     // 前のフレームからの経過時間
     const deltaTimeMs = this.game.loop.delta;
-    
+    // 一覧表示システム更新
     this.museumSystem.systemUpdate(deltaTimeMs);
     
     this.flaskView?.updateView();

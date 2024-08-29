@@ -5,12 +5,15 @@ import {MultiBezierCurveEditor} from "../utility/multiBezierCurveEditor.ts";
 import {ShaderGameObject} from "../utility/shaderGameObject.ts";
 import {MultiBezierCurveFileAdapter} from "../utility/multiBezierCurveFileAdapter.ts";
 import {IS_EDIT_MODE} from "./define.ts";
+import {getParents} from "../utility/containerUtility.ts";
 
 /**
  * フラスコビュー
  * ベジエ曲線で輪郭を描画する
  */
 export class FlaskView extends Phaser.GameObjects.Container {
+  
+  private parents?: Phaser.GameObjects.Container[];
   
   private flaskOutlineGraphics!: Phaser.GameObjects.Graphics;
   private flaskOutlineLeft!: MultiBezierCurve;
@@ -118,7 +121,15 @@ export class FlaskView extends Phaser.GameObjects.Container {
    * フレーム更新
    */
   public updateView() {
-    this.shaderGameObject.setUniformAlpha(this.alpha);
+    // 親階層取得
+    if (!this.parents) this.parents = getParents(this);
+    
+    // alpha
+    let alpha = this.alpha;
+    for (const parent of this.parents) alpha *= parent.alpha;
+    this.shaderGameObject.setUniformAlpha(alpha);
+    
+    // 編集モード時更新
     if (this.flaskOutlineLeftEditor) this.drawFlaskOutline();
   }
   
