@@ -1,4 +1,4 @@
-import { Scene } from "phaser";
+import Phaser, { Scene } from "phaser";
 import {getAssetResourceKey} from "./assetResourceKeyUtility.ts";
 
 /**
@@ -74,37 +74,37 @@ export class AssetLoader extends Scene {
   preload() {
     console.log("AssetLoader preload");
     
-    try {
-      
-      // シェーダーテキストロード
-      for (const path of this.sceneModel.shaderTextPaths) {
-        if (loadCache.has(path)) continue;
-        const key = getAssetResourceKey(path);
-        this.load.text(key, path);
-        loadCache.set(path, key);
-        console.log("shader text loaded:", key, path);
-      }
+    this.load.on("complete", (info: Phaser.Loader.LoaderPlugin) => {
+      console.log("load complete totalComplete", info.totalComplete);
+      console.log("load complete totalFailed", info.totalFailed);
+      this.sceneModel.done = true;
+    });
+    
+    // シェーダーテキストロード
+    for (const path of this.sceneModel.shaderTextPaths) {
+      if (loadCache.has(path)) continue;
+      const key = getAssetResourceKey(path);
+      this.load.text(key, path);
+      loadCache.set(path, key);
+      console.log("shader text loaded:", key, path);
+    }
 
-      // テクスチャロード
-      for (const path of this.sceneModel.texturePaths) {
-        if (loadCache.has(path)) continue;
-        const key = getAssetResourceKey(path);
-        this.load.image(key, path);
-        loadCache.set(path, key);
-        console.log("texture loaded:", key, path);
-      }
+    // テクスチャロード
+    for (const path of this.sceneModel.texturePaths) {
+      if (loadCache.has(path)) continue;
+      const key = getAssetResourceKey(path);
+      this.load.image(key, path);
+      loadCache.set(path, key);
+      console.log("texture loaded:", key, path);
+    }
 
       // jsonロード
-      for (const path of this.sceneModel.jsonPaths) {
-        if (loadCache.has(path)) continue;
-        const key = getAssetResourceKey(path);
-        this.load.json(key, path);
-        loadCache.set(path, key);
-        console.log("json loaded:", key, path);
-      }
-      
-    } catch (e) {
-      console.error("preload error", e);
+    for (const path of this.sceneModel.jsonPaths) {
+      if (loadCache.has(path)) continue;
+      const key = getAssetResourceKey(path);
+      this.load.json(key, path);
+      loadCache.set(path, key);
+      console.log("json loaded:", key, path);
     }
   }
 
@@ -113,6 +113,5 @@ export class AssetLoader extends Scene {
    */
   create() {
     console.log("AssetLoader create");
-    this.sceneModel.done = true;
   }
 }
