@@ -104,7 +104,7 @@ export class AssetLoader extends Scene {
       }
       
     } catch (e) {
-      console.error(e);
+      console.error("preload error", e);
     }
   }
 
