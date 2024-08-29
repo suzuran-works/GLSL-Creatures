@@ -1,6 +1,11 @@
 import Phaser from 'phaser';
 import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {smoothstep} from "../utility/mathUtility.ts";
+import {Queue} from "../utility/queue.ts";
+
+export interface MuseumViewInterface {
+  
+}
 
 /**
  * 一覧表示・ピックアップシステム
@@ -8,17 +13,25 @@ import {smoothstep} from "../utility/mathUtility.ts";
 export class MuseumSystem {
   
   private readonly scene!: Phaser.Scene;
+  private readonly viewQueue!: Queue<MuseumViewInterface>;
   
   private readonly museumAnchorViews: MuseumAnchorView[] = [];
   private readonly positionRefs: Phaser.Math.Vector2[] = [];
   
   private readonly SCROLL_SPEED = 0.022;
   
-  constructor(scene: Phaser.Scene) {
+  /**
+   * コンストラクタ
+   */
+  constructor(scene: Phaser.Scene, viewQueus: Queue<MuseumViewInterface>) {
     this.scene = scene;
+    this.viewQueue = viewQueus;
     this.createViews();
   }
   
+  /**
+   * ビュー作成
+   */
   private createViews() {
     const scene = this.scene;
     const canvas = scene.game.canvas;
@@ -41,6 +54,9 @@ export class MuseumSystem {
     }    
   }
   
+  /**
+   * システムフレーム更新
+   */
   public systemUpdate(deltaTimeMs: number) {
     this.updateViews(deltaTimeMs);
   }
@@ -57,7 +73,11 @@ export class MuseumSystem {
     for (let i = 0; i < this.positionRefs.length; ++i) {
       const posRef = this.positionRefs[i];
       posRef.x += -this.SCROLL_SPEED * deltaTimeMs;
-      if (posRef.x < 0) posRef.x = this.scene.game.canvas.width;
+      let isReset = false;
+      if (posRef.x < 0) {
+        posRef.x = this.scene.game.canvas.width;
+        isReset = true;
+      }
 
       let alphaValue = 1;
       if (posRef.x > canvasWidth/2) {
@@ -71,6 +91,7 @@ export class MuseumSystem {
       const anchorView = this.museumAnchorViews[i];
       anchorView.setPosition(posRef.x, posRef.y);
       anchorView.setAlpha(alphaValue);
+      if (isReset) console.log("@@@@@@@@");
     }
   }
 }

@@ -7,13 +7,14 @@ import {AssetLoader} from "../utility/assetLoader.ts";
 import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
 import {CATEGORY, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
-import {tweenAsync} from "../utility/tweenAsync.ts";
 import {BackgroundView} from "../commonViews/backgroundView.ts";
-import {MuseumSystem} from "../commonSystems/museumSystem.ts";
+import {MuseumSystem, MuseumViewInterface} from "../commonSystems/museumSystem.ts";
 import {BackButton} from "../commonViews/backButton.ts";
 import {TextLabel} from "../commonViews/textLabel.ts";
 import {FpsView} from "../commonViews/fpsView.ts";
 import {isLocalhost} from "../utility/localhostUtility.ts";
+import {Queue} from "../utility/queue.ts";
+import {waitMilliSeconds} from "../utility/asyncUtility.ts";
 
 
 /**
@@ -29,10 +30,10 @@ export class SummaryScene extends Phaser.Scene {
   // テキストラベル
   private textLabel!: TextLabel;
   
+  // 表示物キュー
+  private readonly viewQueue: Queue<MuseumViewInterface> = new Queue<MuseumViewInterface>();
   // 表示システム
   private museumSystem!: MuseumSystem;
-  
-  private flaskView?: FlaskView;
 
   /**
    * コンストラクタ
@@ -77,21 +78,24 @@ export class SummaryScene extends Phaser.Scene {
     if (isLocalhost()) new FpsView(this);
     
     // 表示システム
-    this.museumSystem = new MuseumSystem(this);
+    this.museumSystem = new MuseumSystem(this, this.viewQueue);
     
     // パラメータ指定がある場合はそれを優先的に表示
-    
-    this.createAsync().then();
+    // TODO:
 
     // 戻る押下時
     this.backButton.onClick.subscribe(() => {
       console.log('onClick back button');
     });
+    
+    // 表示物をロード
+    this.loadMuseumViewsAsync().then();
   }
 
+  /*
   private async createAsync() {
     // ビュー追加
-    await this.addViewAsync();
+    //await this.addViewAsync();
     // 仮
     await this.backButton.showAsync(2000);
 
@@ -99,7 +103,39 @@ export class SummaryScene extends Phaser.Scene {
     const m = await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, 99);
     console.log("failCount:", m.failCount);
   }
+  */
 
+  /**
+   * シェーダーロード失敗するまでロード
+   */
+  private async loadMuseumViewsAsync() {
+    let shaderIndex = 0;
+    const canvas = this.game.canvas;
+    const viewSize = {width: canvas.width, height: canvas.height};
+    const hidePosition = {x: -canvas.width, y: -canvas.height};
+    
+    while (true) {
+      // シェーダーをロード
+      const loadModel = await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, shaderIndex);
+      
+      // ロード失敗したらループを抜ける
+      if (loadModel.failCount > 0) break;
+
+      // ビューを作成
+      const shaderKey = getShaderKey(CATEGORY,shaderIndex);
+      const jsonKey = getAssetResourceKey(PATH_JSONS.FLASK_LEFT_OUTLINE_A);
+      const view = new FlaskView(this, viewSize.width, viewSize.height, shaderKey, jsonKey);
+      view.setPosition(hidePosition.x, hidePosition.y);
+      this.viewQueue.enqueue(view);
+      
+      await waitMilliSeconds(10);
+      shaderIndex++;
+    }
+    
+    console.log(`loadMuseumViewsAsync finish noLoadIndex: ${shaderIndex}`);
+  }
+
+  /*
   private async addViewAsync() {
     // シェーダーをロード
     await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, 0);
@@ -124,14 +160,13 @@ export class SummaryScene extends Phaser.Scene {
         ease: 'Sine.easeInOut'
     }).then();
   }
+  */
 
   update() {
     // 前のフレームからの経過時間
     const deltaTimeMs = this.game.loop.delta;
     // 一覧表示システム更新
     this.museumSystem.systemUpdate(deltaTimeMs);
-    
-    this.flaskView?.updateView();
   }
 }
 

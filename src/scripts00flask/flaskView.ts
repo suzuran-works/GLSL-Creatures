@@ -6,12 +6,13 @@ import {ShaderGameObject} from "../utility/shaderGameObject.ts";
 import {MultiBezierCurveFileAdapter} from "../utility/multiBezierCurveFileAdapter.ts";
 import {IS_EDIT_MODE} from "./define.ts";
 import {getParents} from "../utility/containerUtility.ts";
+import {MuseumViewInterface} from "../commonSystems/museumSystem.ts";
 
 /**
  * フラスコビュー
  * ベジエ曲線で輪郭を描画する
  */
-export class FlaskView extends Phaser.GameObjects.Container {
+export class FlaskView extends Phaser.GameObjects.Container implements MuseumViewInterface{
   
   private parents?: Phaser.GameObjects.Container[];
   
