@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import {createConfig, FONT_SMARTFONTUI} from "../define.ts";
+import {createConfig} from "../define.ts";
 import {FlaskView} from "./flaskView.ts";
 import {GetColorCodeByRGB, GetColorCodeTextByRGB} from "../utility/colorUtility.ts";
 import {getAssetResourceKey, getShaderKey} from "../utility/assetResourceKeyUtility.ts";
@@ -11,6 +11,7 @@ import {tweenAsync} from "../utility/tweenAsync.ts";
 import {BackgroundView} from "../commonViews/backgroundView.ts";
 import {MuseumSystem} from "../commonSystems/museumSystem.ts";
 import {BackButton} from "../commonViews/backButton.ts";
+import {TextLabel} from "../commonViews/textLabel.ts";
 
 
 /**
@@ -23,6 +24,8 @@ export class SummaryScene extends Phaser.Scene {
   
   // 戻るボタン
   private backButton!: BackButton;
+  // テキストラベル
+  private textLabel!: TextLabel;
   
   // 表示システム
   private museumSystem!: MuseumSystem;
@@ -53,10 +56,21 @@ export class SummaryScene extends Phaser.Scene {
   create() {
     console.log('SummaryScene create');
 
+    // URLからパラメータを取得
+    const params = new URLSearchParams(window.location.search);
+    const idx = params.get('idx');
+    console.log(`index: ${idx}`);
+
+    const canvas = this.game.canvas;
+
     // 背景
     new BackgroundView(this, GetColorCodeByRGB(0, 0, 0));
     // 戻るボタン
     this.backButton = new BackButton(this, GetColorCodeByRGB(78,78,78), 0.5);
+    // テキストラベル
+    this.textLabel = new TextLabel(this, GetColorCodeTextByRGB(180, 180, 180), 1, 30);
+    this.textLabel.setPosition(canvas.width/2, canvas.height * 0.95);
+    this.textLabel.setText("フラスコの中のGLSL");
     
     // 表示システム
     this.museumSystem = new MuseumSystem(this);
@@ -72,31 +86,8 @@ export class SummaryScene extends Phaser.Scene {
   }
 
   private async createAsync() {
-    const canvas = this.game.canvas;
-
-    // URLからパラメータを取得
-    const params = new URLSearchParams(window.location.search);
-    const idx = params.get('idx');
-
-    // パラメータに基づいてゲームの設定を行う
-    let msg = 'flask';
-    if (idx) {
-      console.log(`index: ${idx}`);
-      msg = `フラスコの中の何か: ${idx}`;
-    }
-    
     // ビュー追加
     //await this.addViewAsync();
-
-    // テキスト
-    const text = this.add.text(0, 0, msg, {
-      fontSize: 30,
-      fontFamily: FONT_SMARTFONTUI,
-    });
-    text.setOrigin(0.5, 0.5);
-    text.setFill(GetColorCodeTextByRGB(180, 180, 180));
-    text.setPosition(canvas.width/2, canvas.height * 0.95);
-    
     // 仮
     await this.backButton.showAsync(2000);
   }
