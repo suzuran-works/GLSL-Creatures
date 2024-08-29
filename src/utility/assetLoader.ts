@@ -100,6 +100,8 @@ export class AssetLoader extends Scene {
       loadCache.set(path, key);
       console.log("json loaded:", key, path);
     }
+    
+    console.log("AssetLoader failCount:", this.load.totalFailed);
   }
 
   /**
