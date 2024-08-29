@@ -52,4 +52,5 @@ export const loadAssetsAsync = async (
   await waitUntil(() => assetLoaderSceneModel.done);
   // NOTE: removeだと完全に削除されて次のlaunchが効かなくなる
   baseScene.scene.stop(AssetLoader.Key);
+  console.log("AssetLoader stop");
 }

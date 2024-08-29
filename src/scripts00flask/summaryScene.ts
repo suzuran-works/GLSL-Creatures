@@ -59,7 +59,7 @@ export class SummaryScene extends Phaser.Scene {
     // URLからパラメータを取得
     const params = new URLSearchParams(window.location.search);
     const idx = params.get('idx');
-    console.log(`index: ${idx}`);
+    console.log(`idx: ${idx}`);
 
     const canvas = this.game.canvas;
 
@@ -87,9 +87,15 @@ export class SummaryScene extends Phaser.Scene {
 
   private async createAsync() {
     // ビュー追加
-    //await this.addViewAsync();
+    await this.addViewAsync();
     // 仮
     await this.backButton.showAsync(2000);
+
+    // シェーダーをロード
+    await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, 99);
+    const shaderKey = getShaderKey(CATEGORY,99);
+    const fragShaderText = this.cache.text.get(shaderKey);
+    console.log(fragShaderText);
   }
 
   private async addViewAsync() {
