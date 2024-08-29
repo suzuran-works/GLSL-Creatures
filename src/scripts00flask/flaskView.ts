@@ -3,9 +3,8 @@ import {GetColorCodeByRGB} from "../utility/colorUtility.ts";
 import {MultiBezierCurve} from "../utility/multiBezierCurve.ts";
 import {MultiBezierCurveEditor} from "../utility/multiBezierCurveEditor.ts";
 import {ShaderGameObject} from "../utility/shaderGameObject.ts";
-import {isLocalhost} from "../utility/localhostUtility.ts";
 import {MultiBezierCurveFileAdapter} from "../utility/multiBezierCurveFileAdapter.ts";
-import {EDIT_MODE} from "./define.ts";
+import {IS_EDIT_MODE} from "./define.ts";
 
 /**
  * フラスコビュー
@@ -50,7 +49,7 @@ export class FlaskView extends Phaser.GameObjects.Container {
     this.drawFlaskOutline();
 
     // デバッグビュー
-    if (EDIT_MODE) this.addDebugRectView(0,0,width,height);
+    if (IS_EDIT_MODE) this.addDebugRectView(0,0,width,height);
   }
   
   /**
@@ -64,7 +63,7 @@ export class FlaskView extends Phaser.GameObjects.Container {
     this.add(this.shaderGameObject);
     
     // デバッグビュー
-    if (EDIT_MODE) this.addDebugRectView(this.shaderGameObject.x, this.shaderGameObject.y, width * 0.5, height * 0.5)
+    if (IS_EDIT_MODE) this.addDebugRectView(this.shaderGameObject.x, this.shaderGameObject.y, width * 0.5, height * 0.5)
   }
   
   private addFlaskOutline(jsonKey: string) {
@@ -73,7 +72,7 @@ export class FlaskView extends Phaser.GameObjects.Container {
     this.add(this.flaskOutlineGraphics);
 
     const isImportData = jsonKey != "";
-    const isEditMode = isLocalhost() && EDIT_MODE;
+    const isEditMode = IS_EDIT_MODE
     const curveUnitCount = 6;
 
     // アウトライン左側のデータ読み書きを用意
