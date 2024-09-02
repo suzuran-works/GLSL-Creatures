@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import {createConfig} from "../define.ts";
-import {FlaskView} from "./flaskView.ts";
+import {EmptyFlaskViewFactory, FlaskView} from "./flaskView.ts";
 import {GetColorCodeByRGB, GetColorCodeTextByRGB} from "../utility/colorUtility.ts";
 import {getAssetResourceKey, getShaderKey} from "../utility/assetResourceKeyUtility.ts";
 import {AssetLoader} from "../utility/assetLoader.ts";
@@ -77,8 +77,11 @@ export class SummaryScene extends Phaser.Scene {
     // FPS表示
     if (isLocalhost()) new FpsView(this);
     
+    // 空のフラスコビューファクトリ
+    const emptyViewFactory = new EmptyFlaskViewFactory(this);
+    
     // 表示システム
-    this.museumSystem = new MuseumSystem(this, this.viewQueue);
+    this.museumSystem = new MuseumSystem(this, this.viewQueue, emptyViewFactory);
     
     // パラメータ指定がある場合はそれを優先的に表示
     // TODO:

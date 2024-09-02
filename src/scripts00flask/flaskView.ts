@@ -10,11 +10,12 @@ import {
   FLASK_OUTLINE_THICKNESS,
   FLASK_OUTLINE_THICKNESS_FLOATING,
   FLOATING_FLASK_VIEW_SCALE,
-  IS_EDIT_MODE
+  IS_EDIT_MODE, PATH_JSONS
 } from "./define.ts";
 import {getParents} from "../utility/containerUtility.ts";
 import {MuseumViewInterface} from "../commonSystems/museumSystem.ts";
 import {inverseLerp} from "../utility/mathUtility.ts";
+import {ReadonlyObservableInterface, SimpleObservable} from "../utility/simpleObservable.ts";
 
 /**
  * フラスコビュー
@@ -34,6 +35,9 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
   private flaskOutlineLeftEditor?: MultiBezierCurveEditor;
   // @ts-ignore
   private flaskOutlineLeftFileAdapter?: MultiBezierCurveFileAdapter;
+
+  private readonly _onClick: SimpleObservable = new SimpleObservable();
+  public onClick: ReadonlyObservableInterface = this._onClick;
   
   private prevScaleX = 1;
   
@@ -209,7 +213,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
   /**
    * 作成
    */
-  public static Create(scene: Phaser.Scene, shaderKey: string, flaskLeftOutlineJsonKey: string) {
+  public static Create(scene: Phaser.Scene, shaderKey: string, flaskLeftOutlineJsonKey: string): MuseumViewInterface {
     const canvas = scene.sys.game.canvas;
     const viewSize = {width: canvas.width, height: canvas.height};
     const initScale = FLOATING_FLASK_VIEW_SCALE;
@@ -218,5 +222,20 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     view.setHidePosition();
     view.setScale(initScale, initScale);
     return view;
+  }
+}
+
+/**
+ * 空のフラスコビューファクトリ
+ */
+export class EmptyFlaskViewFactory {
+  private readonly scene: Phaser.Scene;
+  
+  constructor(scene: Phaser.Scene) {
+    this.scene = scene;
+  }
+  
+  public create(): MuseumViewInterface {
+    return FlaskView.CreateEmpty(this.scene, PATH_JSONS.FLASK_LEFT_OUTLINE_A);
   }
 }

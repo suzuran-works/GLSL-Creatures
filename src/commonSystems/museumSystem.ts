@@ -2,13 +2,19 @@ import Phaser from 'phaser';
 import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {smoothstep} from "../utility/mathUtility.ts";
 import {Queue} from "../utility/queue.ts";
-import {FlaskView} from "../scripts00flask/flaskView.ts";
-import {DISPLAY_COUNT, FADE_DISTANCE, PATH_JSONS, TRANSPARENT_DISTANCE} from "../scripts00flask/define.ts";
+import {DISPLAY_COUNT, FADE_DISTANCE, TRANSPARENT_DISTANCE} from "../scripts00flask/define.ts";
+import {ReadonlyObservableInterface} from "../utility/simpleObservable.ts";
 
 /**
  * コンテンツビューインターフェース
  */
 export interface MuseumViewInterface {
+
+  /**
+   * クリック時処理
+   */
+  onClick: ReadonlyObservableInterface;
+  
   /**
    * 指定親階層へぶら下げる
    */
@@ -30,6 +36,14 @@ export interface MuseumViewInterface {
   updateView(deltaTimeMs: number): void;
 }
 
+export interface EmptyMuseumViewFactoryInterface {
+  
+  /**
+   * 作成
+   */
+  create(): MuseumViewInterface;
+}
+
 /**
  * 一覧表示・ピックアップシステム
  */
@@ -37,6 +51,7 @@ export class MuseumSystem {
   
   private readonly scene!: Phaser.Scene;
   private readonly viewQueue!: Queue<MuseumViewInterface>;
+  private readonly emptyViewFactory!: EmptyMuseumViewFactoryInterface;
   
   private readonly museumAnchorViews: MuseumAnchorView[] = [];
   private readonly positionRefs: Phaser.Math.Vector2[] = [];
@@ -46,9 +61,14 @@ export class MuseumSystem {
   /**
    * コンストラクタ
    */
-  constructor(scene: Phaser.Scene, viewQueus: Queue<MuseumViewInterface>) {
+  constructor(
+    scene: Phaser.Scene,
+    viewQueus: Queue<MuseumViewInterface>,
+    emptyViewFactory: EmptyMuseumViewFactoryInterface
+  ) {
     this.scene = scene;
     this.viewQueue = viewQueus;
+    this.emptyViewFactory = emptyViewFactory;
     this.createViews();
   }
   
@@ -106,8 +126,7 @@ export class MuseumSystem {
       view.setParentTo(anchorView);
       anchorView.setContentView(view);
     } else {
-      console.warn("create empty content view");
-      const emptyView = FlaskView.CreateEmpty(this.scene, PATH_JSONS.FLASK_LEFT_OUTLINE_A);
+      const emptyView = this.emptyViewFactory.create();
       emptyView.setParentTo(anchorView);
       anchorView.setContentView(emptyView);
     }
