@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import {MultiBezierCurve} from "./multiBezierCurve.ts";
 import {getAssetResourceKey} from "./assetResourceKeyUtility.ts";
+import {isLocalhost} from "./localhostUtility.ts";
 
 export type MultiBezierCurveData = {
   curveUnits: MultiBezierCurveUnitData[],
@@ -22,12 +23,14 @@ export class MultiBezierCurveFileAdapter {
   private readonly exportFileName = "tempMultiBezierCurveData.json";
   private exportTarget?: MultiBezierCurve;
   
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene, view:Phaser.GameObjects.Container) {
     this.scene = scene;
     
-    console.warn("sキー押下でデータをMultiBezierCurveデータダウンロード実行");
+    if (!isLocalhost()) return;
+    console.warn("sキー押下でデータをMultiBezierCurveデータダウンロード実行(viewのスケールが1の時)");
     const sKey = scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     sKey.on("down", (_event: KeyboardEvent) => {
+      if (view.scaleX !== 1 || view.scaleY !== 1) return;
       this.exportData();
     });
   }

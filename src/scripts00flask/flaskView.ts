@@ -107,7 +107,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     const curveUnitCount = 6;
 
     // アウトライン左側のデータ読み書きを用意
-    this.flaskOutlineLeftFileAdapter = new MultiBezierCurveFileAdapter(this.scene);
+    this.flaskOutlineLeftFileAdapter = new MultiBezierCurveFileAdapter(this.scene, this);
     
     // 新規作成
     if (!isImportData) {
