@@ -5,7 +5,11 @@ import {MuseumViewInterface} from "./museumSystem.ts";
  */
 export class MuseumAnchorView extends Phaser.GameObjects.Container {
 
-  private contentView?: MuseumViewInterface | undefined;
+  private _contentView?: MuseumViewInterface | undefined;
+  public get contentView(): MuseumViewInterface | undefined {
+    return this._contentView;
+  }
+  
   
   /**
    * コンストラクタ
@@ -22,11 +26,11 @@ export class MuseumAnchorView extends Phaser.GameObjects.Container {
     this.add(anchor);
   }
   
-  public setContentView(contentView: MuseumViewInterface) {
-    this.contentView = contentView;
+  public setContentView(contentView: MuseumViewInterface | undefined) {
+    this._contentView = contentView;
   }
   
   public updateView(deltaTimeMs: number) {
-    this.contentView?.updateView(deltaTimeMs);
+    this._contentView?.updateView(deltaTimeMs);
   }
 }

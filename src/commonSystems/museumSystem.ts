@@ -73,15 +73,33 @@ export class MuseumSystem {
   public attachAll() {
     for (let i = 0; i < this.museumAnchorViews.length; ++i) {
       const anchorView = this.museumAnchorViews[i];
-      const view = this.viewQueue.dequeue();
-      if (view) {
-        view.setParent(anchorView);
-        anchorView.setContentView(view);
-      } else {
-        const emptyView = FlaskView.CreateEmpty(this.scene, PATH_JSONS.FLASK_LEFT_OUTLINE_A);
-        emptyView.setParent(anchorView);
-        anchorView.setContentView(emptyView);
-      }
+      this.linkOrCreate(anchorView);
+    }
+  }
+  
+  /**
+   * ビューを取り替える
+   */
+  private replaceView(anchorView: MuseumAnchorView) {
+    const view = anchorView.contentView;
+    anchorView.setContentView(undefined);
+    if (view) this.viewQueue.enqueue(view);
+    this.linkOrCreate(anchorView);
+  }
+  
+  /**
+   * 指定アンカーにビューを付与(無ければ作成して付与)
+   */
+  private linkOrCreate(anchorView: MuseumAnchorView) {
+    const view = this.viewQueue.dequeue();
+    if (view) {
+      view.setParent(anchorView);
+      anchorView.setContentView(view);
+    } else {
+      console.warn("create empty content view");
+      const emptyView = FlaskView.CreateEmpty(this.scene, PATH_JSONS.FLASK_LEFT_OUTLINE_A);
+      emptyView.setParent(anchorView);
+      anchorView.setContentView(emptyView);
     }
   }
   
@@ -122,7 +140,7 @@ export class MuseumSystem {
       const anchorView = this.museumAnchorViews[i];
       anchorView.setPosition(posRef.x, posRef.y);
       anchorView.setAlpha(alphaValue);
-      if (isReset) console.log("@@@@@@@@");
+      if (isReset) this.replaceView(anchorView);
       anchorView.updateView(deltaTimeMs);
     }
   }
