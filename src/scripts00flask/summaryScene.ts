@@ -5,7 +5,7 @@ import {GetColorCodeByRGB, GetColorCodeTextByRGB} from "../utility/colorUtility.
 import {getAssetResourceKey, getShaderKey} from "../utility/assetResourceKeyUtility.ts";
 import {AssetLoader} from "../utility/assetLoader.ts";
 import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
-import {CATEGORY, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
+import {CATEGORY, DISPLAY_COUNT, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
 import {BackgroundView} from "../commonViews/backgroundView.ts";
 import {MuseumSystem, MuseumViewInterface} from "../commonSystems/museumSystem.ts";
@@ -113,11 +113,14 @@ export class SummaryScene extends Phaser.Scene {
       
       await waitMilliSeconds(10);
       shaderIndex++;
+
+      // 指定個数まで作れたら陳列を表示
+      if (shaderIndex == DISPLAY_COUNT) this.museumSystem.attachAll();
     }
-    
+    // 指定個数まで作れていなかった場合を考慮
+    if (shaderIndex < DISPLAY_COUNT) this.museumSystem.attachAll();
+
     console.log(`loadMuseumViewsAsync finish noLoadIndex: ${shaderIndex}`);
-    
-    this.museumSystem.attachAll();
   }
   
   update() {

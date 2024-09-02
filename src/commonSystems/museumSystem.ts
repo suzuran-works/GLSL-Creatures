@@ -71,6 +71,8 @@ export class MuseumSystem {
    * すべてのアンカーにアタッチ
    */
   public attachAll() {
+    console.log("@@@@@@@@@ attachAll");
+    
     for (let i = 0; i < this.museumAnchorViews.length; ++i) {
       const anchorView = this.museumAnchorViews[i];
       this.linkOrCreate(anchorView);
@@ -78,19 +80,17 @@ export class MuseumSystem {
   }
   
   /**
-   * ビューを取り替える
-   */
-  private replaceView(anchorView: MuseumAnchorView) {
-    const view = anchorView.contentView;
-    anchorView.setContentView(undefined);
-    if (view) this.viewQueue.enqueue(view);
-    this.linkOrCreate(anchorView);
-  }
-  
-  /**
    * 指定アンカーにビューを付与(無ければ作成して付与)
    */
   private linkOrCreate(anchorView: MuseumAnchorView) {
+    // 既にアンカーがぶら下げていたら外す
+    const showingView = anchorView.contentView;
+    if (showingView) {
+      anchorView.setContentView(undefined);
+      this.viewQueue.enqueue(showingView);
+    }
+    
+    // キューからビューを取り出してアンカーにぶら下げる
     const view = this.viewQueue.dequeue();
     if (view) {
       view.setParent(anchorView);
@@ -140,7 +140,7 @@ export class MuseumSystem {
       const anchorView = this.museumAnchorViews[i];
       anchorView.setPosition(posRef.x, posRef.y);
       anchorView.setAlpha(alphaValue);
-      if (isReset) this.replaceView(anchorView);
+      if (isReset) this.linkOrCreate(anchorView);
       anchorView.updateView(deltaTimeMs);
     }
   }
