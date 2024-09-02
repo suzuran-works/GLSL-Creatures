@@ -4,7 +4,7 @@ import {MultiBezierCurve} from "../utility/multiBezierCurve.ts";
 import {MultiBezierCurveEditor} from "../utility/multiBezierCurveEditor.ts";
 import {ShaderGameObject} from "../utility/shaderGameObject.ts";
 import {MultiBezierCurveFileAdapter} from "../utility/multiBezierCurveFileAdapter.ts";
-import {IS_EDIT_MODE} from "./define.ts";
+import {FLOATING_FLASK_VIEW_SCALE, IS_EDIT_MODE} from "./define.ts";
 import {getParents} from "../utility/containerUtility.ts";
 import {MuseumViewInterface} from "../commonSystems/museumSystem.ts";
 
@@ -13,6 +13,28 @@ import {MuseumViewInterface} from "../commonSystems/museumSystem.ts";
  * ベジエ曲線で輪郭を描画する
  */
 export class FlaskView extends Phaser.GameObjects.Container implements MuseumViewInterface{
+  
+  /**
+   * 作成(空)
+   */
+  public static CreateEmpty(scene: Phaser.Scene, flaskLeftOutlineJsonKey: string) {
+    return FlaskView.Create(scene, "", flaskLeftOutlineJsonKey);
+  }
+  
+  /**
+   * 作成
+   */
+  public static Create(scene: Phaser.Scene, shaderKey: string, flaskLeftOutlineJsonKey: string) {
+    const canvas = scene.sys.game.canvas;
+    const viewSize = {width: canvas.width, height: canvas.height};
+    const hidePosition = {x: -canvas.width, y: -canvas.height};
+    const initScale = FLOATING_FLASK_VIEW_SCALE;
+
+    const view = new FlaskView(scene, viewSize.width, viewSize.height, shaderKey, flaskLeftOutlineJsonKey);
+    view.setPosition(hidePosition.x, hidePosition.y);
+    view.setScale(initScale, initScale);
+    return view;
+  }
   
   private parents?: Phaser.GameObjects.Container[];
   

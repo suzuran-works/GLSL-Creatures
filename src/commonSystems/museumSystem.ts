@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {smoothstep} from "../utility/mathUtility.ts";
 import {Queue} from "../utility/queue.ts";
+import {FlaskView} from "../scripts00flask/flaskView.ts";
+import {PATH_JSONS} from "../scripts00flask/define.ts";
 
 /**
  * コンテンツビューインターフェース
@@ -75,6 +77,10 @@ export class MuseumSystem {
       if (view) {
         view.setParent(anchorView);
         anchorView.setContentView(view);
+      } else {
+        const emptyView = FlaskView.CreateEmpty(this.scene, PATH_JSONS.FLASK_LEFT_OUTLINE_A);
+        emptyView.setParent(anchorView);
+        anchorView.setContentView(emptyView);
       }
     }
   }

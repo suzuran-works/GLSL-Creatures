@@ -5,7 +5,7 @@ import {GetColorCodeByRGB, GetColorCodeTextByRGB} from "../utility/colorUtility.
 import {getAssetResourceKey, getShaderKey} from "../utility/assetResourceKeyUtility.ts";
 import {AssetLoader} from "../utility/assetLoader.ts";
 import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
-import {CATEGORY, FLOATING_FLASK_VIEW_SCALE, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
+import {CATEGORY, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
 import {BackgroundView} from "../commonViews/backgroundView.ts";
 import {MuseumSystem, MuseumViewInterface} from "../commonSystems/museumSystem.ts";
@@ -97,10 +97,6 @@ export class SummaryScene extends Phaser.Scene {
    */
   private async loadMuseumViewsAsync() {
     let shaderIndex = 0;
-    const canvas = this.game.canvas;
-    const viewSize = {width: canvas.width, height: canvas.height};
-    const hidePosition = {x: -canvas.width, y: -canvas.height};
-    const initScale = FLOATING_FLASK_VIEW_SCALE;
     
     while (true) {
       // シェーダーをロード
@@ -110,11 +106,9 @@ export class SummaryScene extends Phaser.Scene {
       if (loadModel.failCount > 0) break;
 
       // ビューを作成
-      const shaderKey = getShaderKey(CATEGORY,shaderIndex);
-      const jsonKey = getAssetResourceKey(PATH_JSONS.FLASK_LEFT_OUTLINE_A);
-      const view = new FlaskView(this, viewSize.width, viewSize.height, shaderKey, jsonKey);
-      view.setPosition(hidePosition.x, hidePosition.y);
-      view.setScale(initScale, initScale);
+      const shaderKey = getShaderKey(CATEGORY, shaderIndex);
+      const flaskOutlineJsonKey = getAssetResourceKey(PATH_JSONS.FLASK_LEFT_OUTLINE_A);
+      const view = FlaskView.Create(this, shaderKey, flaskOutlineJsonKey);
       this.viewQueue.enqueue(view);
       
       await waitMilliSeconds(10);
