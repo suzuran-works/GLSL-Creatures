@@ -12,8 +12,18 @@ export interface MuseumViewInterface {
   /**
    * 指定親階層へぶら下げる
    */
-  setParent(parent: Phaser.GameObjects.Container): void;
+  setParentTo(parent: Phaser.GameObjects.Container): void;
 
+  /**
+   * 指定親階層から外す
+   */
+  removeParentFrom(parent: Phaser.GameObjects.Container): void;
+  
+  /**
+   * 隠す位置へ移動
+   */
+  setHidePosition(): void;
+  
   /**
    * フレーム更新
    */
@@ -55,7 +65,7 @@ export class MuseumSystem {
 
     const startX = 0;
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count - 1; i++) {
       const x = startX + margin * i;
       const y = canvas.height / 2;
       const posRef = new Phaser.Math.Vector2(x, y);
@@ -71,8 +81,6 @@ export class MuseumSystem {
    * すべてのアンカーにアタッチ
    */
   public attachAll() {
-    console.log("@@@@@@@@@ attachAll");
-    
     for (let i = 0; i < this.museumAnchorViews.length; ++i) {
       const anchorView = this.museumAnchorViews[i];
       this.linkOrCreate(anchorView);
@@ -86,6 +94,8 @@ export class MuseumSystem {
     // 既にアンカーがぶら下げていたら外す
     const showingView = anchorView.contentView;
     if (showingView) {
+      showingView.removeParentFrom(anchorView);
+      showingView.setHidePosition();
       anchorView.setContentView(undefined);
       this.viewQueue.enqueue(showingView);
     }
@@ -93,12 +103,12 @@ export class MuseumSystem {
     // キューからビューを取り出してアンカーにぶら下げる
     const view = this.viewQueue.dequeue();
     if (view) {
-      view.setParent(anchorView);
+      view.setParentTo(anchorView);
       anchorView.setContentView(view);
     } else {
       console.warn("create empty content view");
       const emptyView = FlaskView.CreateEmpty(this.scene, PATH_JSONS.FLASK_LEFT_OUTLINE_A);
-      emptyView.setParent(anchorView);
+      emptyView.setParentTo(anchorView);
       anchorView.setContentView(emptyView);
     }
   }

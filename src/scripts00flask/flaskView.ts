@@ -65,12 +65,33 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     this.prevScaleX = this.scaleX;
 
     // デバッグビュー
-    if (IS_EDIT_MODE) this.addDebugRectView(0,0,width,height);
+    if (IS_EDIT_MODE) this.addDebugRectView(0,0, width, height);
+    
+    // ボタン領域追加
+    this.addButtonRect();
   }
   
-  public setParent(parent: Phaser.GameObjects.Container) {
+  public setParentTo(parent: Phaser.GameObjects.Container) {
     parent.add(this);
     this.setPosition(0, 0);
+  }
+  
+  public removeParentFrom(parent: Phaser.GameObjects.Container) {
+    parent.remove(this);
+  }
+  
+  public setHidePosition() {
+    const canvas = this.scene.game.canvas;
+    this.setPosition(-canvas.width, -canvas.height);
+  }
+
+  private addButtonRect() {
+    const color = GetColorCodeByRGB(255,255,255);
+    const alpha = 0.1;
+    const width = this.width * 0.6;
+    const height = this.height;
+    const rect = new Phaser.GameObjects.Rectangle(this.scene, 0, 0, width, height, color, alpha);
+    this.add(rect);
   }
   
   /**
@@ -191,11 +212,10 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
   public static Create(scene: Phaser.Scene, shaderKey: string, flaskLeftOutlineJsonKey: string) {
     const canvas = scene.sys.game.canvas;
     const viewSize = {width: canvas.width, height: canvas.height};
-    const hidePosition = {x: -canvas.width, y: -canvas.height};
     const initScale = FLOATING_FLASK_VIEW_SCALE;
 
     const view = new FlaskView(scene, viewSize.width, viewSize.height, shaderKey, flaskLeftOutlineJsonKey);
-    view.setPosition(hidePosition.x, hidePosition.y);
+    view.setHidePosition();
     view.setScale(initScale, initScale);
     return view;
   }
