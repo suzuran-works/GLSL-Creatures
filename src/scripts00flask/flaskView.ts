@@ -72,7 +72,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     if (IS_EDIT_MODE) this.addDebugRectView(0,0, width, height);
     
     // ボタン領域追加
-    this.addButtonRect();
+    if (shaderKey != "") this.addButtonRect();
   }
   
   public setParentTo(parent: Phaser.GameObjects.Container) {
@@ -91,7 +91,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
 
   private addButtonRect() {
     const color = GetColorCodeByRGB(255,255,255);
-    const alpha = 0.1;
+    const alpha = 0.0;
     const width = this.width * 0.6;
     const height = this.height;
     const rect = new Phaser.GameObjects.Rectangle(this.scene, 0, 0, width, height, color, alpha);
