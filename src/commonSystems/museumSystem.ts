@@ -3,7 +3,7 @@ import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {smoothstep} from "../utility/mathUtility.ts";
 import {Queue} from "../utility/queue.ts";
 import {FlaskView} from "../scripts00flask/flaskView.ts";
-import {PATH_JSONS} from "../scripts00flask/define.ts";
+import {DISPLAY_COUNT, FADE_DISTANCE, PATH_JSONS, TRANSPARENT_DISTANCE} from "../scripts00flask/define.ts";
 
 /**
  * コンテンツビューインターフェース
@@ -50,7 +50,7 @@ export class MuseumSystem {
     const canvas = scene.game.canvas;
 
     const width = canvas.width;
-    const count = 6;
+    const count = DISPLAY_COUNT;
     const margin = width / (count - 1);
 
     const startX = 0;
@@ -96,11 +96,11 @@ export class MuseumSystem {
    * 表示更新
    */
   private updateViews(deltaTimeMs: number) {
-    const transparentDistance = 78;
+    const transparentDistance = TRANSPARENT_DISTANCE;
     const canvasWidth = this.scene.game.canvas.width;
     const fadeThresBeginX = canvasWidth - transparentDistance;
     const fadeThresEndX = transparentDistance;
-    const fadeDistance = 22;
+    const fadeDistance = FADE_DISTANCE;
     for (let i = 0; i < this.positionRefs.length; ++i) {
       const posRef = this.positionRefs[i];
       posRef.x += -this.SCROLL_SPEED * deltaTimeMs;

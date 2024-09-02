@@ -18,4 +18,11 @@ export const PATH_JSONS = {
 }
 
 // 羅列時のフラスコビューのスケール
-export const FLOATING_FLASK_VIEW_SCALE = 0.3;
+export const FLOATING_FLASK_VIEW_SCALE = 0.22;
+
+// 陳列個数
+export const DISPLAY_COUNT = 7;
+// 透明距離
+export const TRANSPARENT_DISTANCE = 78;
+// フェード距離
+export const FADE_DISTANCE = 78;
