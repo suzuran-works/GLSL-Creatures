@@ -22,28 +22,6 @@ import {inverseLerp} from "../utility/mathUtility.ts";
  */
 export class FlaskView extends Phaser.GameObjects.Container implements MuseumViewInterface{
   
-  /**
-   * 作成(空)
-   */
-  public static CreateEmpty(scene: Phaser.Scene, flaskLeftOutlineJsonKey: string) {
-    return FlaskView.Create(scene, "", flaskLeftOutlineJsonKey);
-  }
-  
-  /**
-   * 作成
-   */
-  public static Create(scene: Phaser.Scene, shaderKey: string, flaskLeftOutlineJsonKey: string) {
-    const canvas = scene.sys.game.canvas;
-    const viewSize = {width: canvas.width, height: canvas.height};
-    const hidePosition = {x: -canvas.width, y: -canvas.height};
-    const initScale = FLOATING_FLASK_VIEW_SCALE;
-
-    const view = new FlaskView(scene, viewSize.width, viewSize.height, shaderKey, flaskLeftOutlineJsonKey);
-    view.setPosition(hidePosition.x, hidePosition.y);
-    view.setScale(initScale, initScale);
-    return view;
-  }
-  
   private parents?: Phaser.GameObjects.Container[];
   
   private flaskOutlineGraphics!: Phaser.GameObjects.Graphics;
@@ -198,5 +176,27 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     const alpha = 0.1;
     const rect = new Phaser.GameObjects.Rectangle(this.scene, x, y, w, h, color, alpha);
     this.add(rect);
+  }
+
+  /**
+   * 作成(空)
+   */
+  public static CreateEmpty(scene: Phaser.Scene, flaskLeftOutlineJsonKey: string) {
+    return FlaskView.Create(scene, "", flaskLeftOutlineJsonKey);
+  }
+
+  /**
+   * 作成
+   */
+  public static Create(scene: Phaser.Scene, shaderKey: string, flaskLeftOutlineJsonKey: string) {
+    const canvas = scene.sys.game.canvas;
+    const viewSize = {width: canvas.width, height: canvas.height};
+    const hidePosition = {x: -canvas.width, y: -canvas.height};
+    const initScale = FLOATING_FLASK_VIEW_SCALE;
+
+    const view = new FlaskView(scene, viewSize.width, viewSize.height, shaderKey, flaskLeftOutlineJsonKey);
+    view.setPosition(hidePosition.x, hidePosition.y);
+    view.setScale(initScale, initScale);
+    return view;
   }
 }
