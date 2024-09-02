@@ -140,7 +140,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
    */
   private drawFlaskOutline() {
     this.flaskOutlineGraphics.clear();
-    this.flaskOutlineGraphics.lineStyle(4, GetColorCodeByRGB(122,122,122), 1.0);
+    this.flaskOutlineGraphics.lineStyle(16, GetColorCodeByRGB(122,122,122), 1.0);
     this.flaskOutlineLeft.draw(this.flaskOutlineGraphics);
     this.flaskOutlineRight.drawLRFlip(this.flaskOutlineGraphics, this.flaskOutlineLeft);
   }
