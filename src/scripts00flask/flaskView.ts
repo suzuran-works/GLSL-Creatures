@@ -96,6 +96,15 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     const height = this.height;
     const rect = new Phaser.GameObjects.Rectangle(this.scene, 0, 0, width, height, color, alpha);
     this.add(rect);
+
+    // 押下時イベント
+    rect.setInteractive();
+    rect.on('pointerdown', () => {
+      const alpha = this.getApparentlyAlpha();
+      if (alpha < 1) return;
+      this._onClick.on(undefined);
+      console.log("FlaskView.onClick");
+    });
   }
   
   /**
@@ -177,12 +186,9 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
    * フレーム更新
    */
   public updateView(_deltaTimeMs: number) {
-    // 親階層取得
-    if (!this.parents) this.parents = getParents(this);
     
-    // alpha
-    let alpha = this.alpha;
-    for (const parent of this.parents) alpha *= parent.alpha;
+    // 透明度(親階層考慮)
+    const alpha = this.getApparentlyAlpha();
     this.shaderGameObject?.setUniformAlpha(alpha);
     
     // 編集モード時更新
@@ -191,6 +197,20 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     else if (this.scaleX != this.prevScaleX) this.drawFlaskOutline();
     
     this.prevScaleX = this.scaleX;
+  }
+  
+  /**
+   * 親階層考慮の透明度取得
+   */
+  private getApparentlyAlpha() {
+    // 親階層取得
+    if (!this.parents) this.parents = getParents(this);
+
+    // alpha
+    let alpha = this.alpha;
+    for (const parent of this.parents) alpha *= parent.alpha;
+    
+    return alpha;
   }
   
   /**
