@@ -4,9 +4,17 @@ import {MultiBezierCurve} from "../utility/multiBezierCurve.ts";
 import {MultiBezierCurveEditor} from "../utility/multiBezierCurveEditor.ts";
 import {ShaderGameObject} from "../utility/shaderGameObject.ts";
 import {MultiBezierCurveFileAdapter} from "../utility/multiBezierCurveFileAdapter.ts";
-import {FLOATING_FLASK_VIEW_SCALE, IS_EDIT_MODE} from "./define.ts";
+import {
+  FLASK_OUTLINE_COLOR_VALUE,
+  FLASK_OUTLINE_COLOR_VALUE_FLOATING,
+  FLASK_OUTLINE_THICKNESS,
+  FLASK_OUTLINE_THICKNESS_FLOATING,
+  FLOATING_FLASK_VIEW_SCALE,
+  IS_EDIT_MODE
+} from "./define.ts";
 import {getParents} from "../utility/containerUtility.ts";
 import {MuseumViewInterface} from "../commonSystems/museumSystem.ts";
+import {inverseLerp} from "../utility/mathUtility.ts";
 
 /**
  * フラスコビュー
@@ -49,6 +57,8 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
   // @ts-ignore
   private flaskOutlineLeftFileAdapter?: MultiBezierCurveFileAdapter;
   
+  private prevScaleX = 1;
+  
   /**
    * コンストラクタ
    */
@@ -73,6 +83,8 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     // フラスコの輪郭を描画
     this.addFlaskOutline(flaskLeftOutlineJsonKey);
     this.drawFlaskOutline();
+    
+    this.prevScaleX = this.scaleX;
 
     // デバッグビュー
     if (IS_EDIT_MODE) this.addDebugRectView(0,0,width,height);
@@ -140,9 +152,22 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
    */
   private drawFlaskOutline() {
     this.flaskOutlineGraphics.clear();
-    this.flaskOutlineGraphics.lineStyle(8, GetColorCodeByRGB(122,122,122), 1.0);
+    const {thickness, colorValue} = this.getFlaskOutlineThickness();
+    this.flaskOutlineGraphics.lineStyle(thickness, GetColorCodeByRGB(colorValue,colorValue,colorValue), 1.0);
     this.flaskOutlineLeft.draw(this.flaskOutlineGraphics);
     this.flaskOutlineRight.drawLRFlip(this.flaskOutlineGraphics, this.flaskOutlineLeft);
+  }
+  
+  /**
+   * スケールに応じたアウトラインの太さと色を取得
+   */
+  private getFlaskOutlineThickness() {
+    const scale = this.scaleX;
+    const s01 = inverseLerp(FLOATING_FLASK_VIEW_SCALE, 1.0, scale);
+    const thickness = Phaser.Math.Linear(FLASK_OUTLINE_THICKNESS_FLOATING, FLASK_OUTLINE_THICKNESS, s01);
+    const colorValue = Phaser.Math.Linear(FLASK_OUTLINE_COLOR_VALUE_FLOATING, FLASK_OUTLINE_COLOR_VALUE, s01);
+    
+    return {thickness:thickness, colorValue:colorValue};
   }
   
   /**
@@ -159,6 +184,10 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     
     // 編集モード時更新
     if (this.flaskOutlineLeftEditor) this.drawFlaskOutline();
+    // スケール変更時
+    else if (this.scaleX != this.prevScaleX) this.drawFlaskOutline();
+    
+    this.prevScaleX = this.scaleX;
   }
   
   /**

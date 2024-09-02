@@ -20,6 +20,15 @@ export const PATH_JSONS = {
 // 羅列時のフラスコビューのスケール
 export const FLOATING_FLASK_VIEW_SCALE = 0.22;
 
+// フラスコビューのアウトライン太さ(スケール1)
+export const FLASK_OUTLINE_THICKNESS = 4;
+// フラスコビューのアウトライン太さ(羅列時)
+export const FLASK_OUTLINE_THICKNESS_FLOATING = 16;
+// フラスコビューのアウトライン色(スケール1)
+export const FLASK_OUTLINE_COLOR_VALUE = 122;
+// フラスコビューのアウトライン色(羅列時)
+export const FLASK_OUTLINE_COLOR_VALUE_FLOATING = 78;
+
 // 陳列個数
 export const DISPLAY_COUNT = 7;
 // 透明距離
