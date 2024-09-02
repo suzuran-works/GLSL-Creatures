@@ -3,8 +3,19 @@ import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {smoothstep} from "../utility/mathUtility.ts";
 import {Queue} from "../utility/queue.ts";
 
+/**
+ * コンテンツビューインターフェース
+ */
 export interface MuseumViewInterface {
-  
+  /**
+   * 指定親階層へぶら下げる
+   */
+  setParent(parent: Phaser.GameObjects.Container): void;
+
+  /**
+   * フレーム更新
+   */
+  updateView(deltaTimeMs: number): void;
 }
 
 /**
@@ -55,6 +66,20 @@ export class MuseumSystem {
   }
   
   /**
+   * すべてのアンカーにアタッチ
+   */
+  public attachAll() {
+    for (let i = 0; i < this.museumAnchorViews.length; ++i) {
+      const anchorView = this.museumAnchorViews[i];
+      const view = this.viewQueue.dequeue();
+      if (view) {
+        view.setParent(anchorView);
+        anchorView.setContentView(view);
+      }
+    }
+  }
+  
+  /**
    * システムフレーム更新
    */
   public systemUpdate(deltaTimeMs: number) {
@@ -92,6 +117,7 @@ export class MuseumSystem {
       anchorView.setPosition(posRef.x, posRef.y);
       anchorView.setAlpha(alphaValue);
       if (isReset) console.log("@@@@@@@@");
+      anchorView.updateView(deltaTimeMs);
     }
   }
 }

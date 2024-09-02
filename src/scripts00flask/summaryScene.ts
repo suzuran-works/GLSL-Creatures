@@ -5,7 +5,7 @@ import {GetColorCodeByRGB, GetColorCodeTextByRGB} from "../utility/colorUtility.
 import {getAssetResourceKey, getShaderKey} from "../utility/assetResourceKeyUtility.ts";
 import {AssetLoader} from "../utility/assetLoader.ts";
 import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
-import {CATEGORY, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
+import {CATEGORY, FLOATING_FLASK_VIEW_SCALE, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
 import {BackgroundView} from "../commonViews/backgroundView.ts";
 import {MuseumSystem, MuseumViewInterface} from "../commonSystems/museumSystem.ts";
@@ -92,19 +92,6 @@ export class SummaryScene extends Phaser.Scene {
     this.loadMuseumViewsAsync().then();
   }
 
-  /*
-  private async createAsync() {
-    // ビュー追加
-    //await this.addViewAsync();
-    // 仮
-    await this.backButton.showAsync(2000);
-
-    // シェーダーロード失敗テスト
-    const m = await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, 99);
-    console.log("failCount:", m.failCount);
-  }
-  */
-
   /**
    * シェーダーロード失敗するまでロード
    */
@@ -113,6 +100,7 @@ export class SummaryScene extends Phaser.Scene {
     const canvas = this.game.canvas;
     const viewSize = {width: canvas.width, height: canvas.height};
     const hidePosition = {x: -canvas.width, y: -canvas.height};
+    const initScale = FLOATING_FLASK_VIEW_SCALE;
     
     while (true) {
       // シェーダーをロード
@@ -126,6 +114,7 @@ export class SummaryScene extends Phaser.Scene {
       const jsonKey = getAssetResourceKey(PATH_JSONS.FLASK_LEFT_OUTLINE_A);
       const view = new FlaskView(this, viewSize.width, viewSize.height, shaderKey, jsonKey);
       view.setPosition(hidePosition.x, hidePosition.y);
+      view.setScale(initScale, initScale);
       this.viewQueue.enqueue(view);
       
       await waitMilliSeconds(10);
@@ -133,35 +122,10 @@ export class SummaryScene extends Phaser.Scene {
     }
     
     console.log(`loadMuseumViewsAsync finish noLoadIndex: ${shaderIndex}`);
+    
+    this.museumSystem.attachAll();
   }
-
-  /*
-  private async addViewAsync() {
-    // シェーダーをロード
-    await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, 0);
-
-    // フラスコ
-    const canvas = this.game.canvas;
-    const width = canvas.width;
-    const height = canvas.height;
-    const shaderKey = getShaderKey(CATEGORY,0);
-    const jsonKey = getAssetResourceKey(PATH_JSONS.FLASK_LEFT_OUTLINE_A);
-    this.flaskView = new FlaskView(this, width, height, shaderKey, jsonKey);
-    this.flaskView.setPosition(canvas.width/2, canvas.height/2);
-
-    tweenAsync(this, {
-        targets: this.flaskView,
-        duration: 2000,
-        //scaleX: 0.3,
-        //scaleY: 0.3,
-        alpha: 1,
-        repeat: -1,
-        yoyo: true,
-        ease: 'Sine.easeInOut'
-    }).then();
-  }
-  */
-
+  
   update() {
     // 前のフレームからの経過時間
     const deltaTimeMs = this.game.loop.delta;

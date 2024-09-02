@@ -20,7 +20,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
   private flaskOutlineLeft!: MultiBezierCurve;
   private flaskOutlineRight!: MultiBezierCurve;
   
-  private shaderGameObject!: ShaderGameObject;
+  private shaderGameObject?: ShaderGameObject;
   
   // @ts-ignore
   private flaskOutlineLeftEditor?: MultiBezierCurveEditor;
@@ -46,7 +46,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     this.setSize(width, height);
     
     // シェーダーオブジェクト作成
-    this.addShaderObject(shaderKey, shaderObjectOffSetY);
+    if (shaderKey != "") this.addShaderObject(shaderKey, shaderObjectOffSetY);
     
     // フラスコの輪郭を描画
     this.addFlaskOutline(flaskLeftOutlineJsonKey);
@@ -54,6 +54,11 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
 
     // デバッグビュー
     if (IS_EDIT_MODE) this.addDebugRectView(0,0,width,height);
+  }
+  
+  public setParent(parent: Phaser.GameObjects.Container) {
+    parent.add(this);
+    this.setPosition(0, 0);
   }
   
   /**
@@ -121,14 +126,14 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
   /**
    * フレーム更新
    */
-  public updateView() {
+  public updateView(_deltaTimeMs: number) {
     // 親階層取得
     if (!this.parents) this.parents = getParents(this);
     
     // alpha
     let alpha = this.alpha;
     for (const parent of this.parents) alpha *= parent.alpha;
-    this.shaderGameObject.setUniformAlpha(alpha);
+    this.shaderGameObject?.setUniformAlpha(alpha);
     
     // 編集モード時更新
     if (this.flaskOutlineLeftEditor) this.drawFlaskOutline();

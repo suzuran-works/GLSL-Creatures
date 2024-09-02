@@ -16,3 +16,6 @@ export const SHADER_FOLDER = 'shaders00flask';
 export const PATH_JSONS = {
   FLASK_LEFT_OUTLINE_A: `../jsons/jsons00flask/flaskLeftOutlineA.json`
 }
+
+// 羅列時のフラスコビューのスケール
+export const FLOATING_FLASK_VIEW_SCALE = 0.3;

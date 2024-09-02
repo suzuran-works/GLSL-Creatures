@@ -7,7 +7,7 @@ import Phaser from "phaser";
 export class ShaderGameObject extends Phaser.GameObjects.Container {
 
   private readonly shaderKey!: string;
-  private shaderObject!: Phaser.GameObjects.Shader;
+  private shaderObject?: Phaser.GameObjects.Shader;
   
   /**
    * コンストラクタ

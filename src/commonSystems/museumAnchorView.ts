@@ -1,9 +1,12 @@
+import {MuseumViewInterface} from "./museumSystem.ts";
 
 /**
  * 一覧表示の個々のアンカー
  */
 export class MuseumAnchorView extends Phaser.GameObjects.Container {
 
+  private contentView?: MuseumViewInterface | undefined;
+  
   /**
    * コンストラクタ
    */
@@ -15,7 +18,15 @@ export class MuseumAnchorView extends Phaser.GameObjects.Container {
   }
   
   private addDebugView() {
-    const anchor = this.scene.add.circle(0, 0, 10, 0x00ff00);
+    const anchor = this.scene.add.circle(0, 0, 6, 0x00ff00, 0);
     this.add(anchor);
+  }
+  
+  public setContentView(contentView: MuseumViewInterface) {
+    this.contentView = contentView;
+  }
+  
+  public updateView(deltaTimeMs: number) {
+    this.contentView?.updateView(deltaTimeMs);
   }
 }
