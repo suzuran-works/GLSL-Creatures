@@ -98,6 +98,9 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     this.setVisible(false);
   }
 
+  /**
+   * ボタン追加
+   */
   private addButtonRect() {
     const color = GetColorCodeByRGB(255,255,255);
     const alpha = 0.0;
@@ -130,6 +133,9 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     if (IS_EDIT_MODE) this.addDebugRectView(this.shaderGameObject.x, this.shaderGameObject.y, width * 0.5, height * 0.5)
   }
   
+  /**
+   * アウトライン追加
+   */
   private addFlaskOutline(jsonKey: string) {
     // Graphicsオブジェクトを作成
     this.flaskOutlineGraphics = this.scene.add.graphics();
