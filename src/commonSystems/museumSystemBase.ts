@@ -113,7 +113,7 @@ export abstract class MuseumSystemBase {
       view.setParentTo(anchorView);
       anchorView.setContentView(view);
       if (!this.disposableMap.has(view)) {
-        const disposable = view.onClick.subscribe(() => this.onClick(view));
+        const disposable = view.onClick.subscribe(() => this.onClickAsync(view).then());
         this.disposableMap.set(view, disposable);
       }
     } else {
@@ -126,9 +126,7 @@ export abstract class MuseumSystemBase {
   /**
    * 押下時
    */
-  protected onClick(view: MuseumViewInterface) {
-    console.log(`@@@ onClick: ${view.shaderIndex}`);
-  }
+  protected abstract onClickAsync(view: MuseumViewInterface) : Promise<void>;
   
   /**
    * システムフレーム更新

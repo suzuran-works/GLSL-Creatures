@@ -73,6 +73,10 @@ export class MuseumSystemFlow extends MuseumSystemBase {
     }
   }
   
+  protected override async onClickAsync(view: MuseumViewInterface): Promise<void> {
+    console.log(`@@@ onClick: ${view.shaderIndex}`);
+  }
+
   protected override updateViews(deltaTimeMs: number) {
     const transparentDistance = this.setting.fadeDistance;
     const canvasWidth = this.scene.game.canvas.width;
