@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {Queue} from "../utility/queue.ts";
-import {ReadonlyObservableInterface} from "../utility/simpleObservable.ts";
+import {ReadonlyObservableInterface, SimpleDisposableInterface} from "../utility/simpleObservable.ts";
 
 /**
  * コンテンツビューインターフェース
@@ -52,6 +52,7 @@ export interface EmptyMuseumViewFactoryInterface {
 
 /**
  * 一覧表示・ピックアップシステム
+ * 現状MuseumViewは表示個数のみを生成するわけではなく、作られるだけ作られる。
  */
 export abstract class MuseumSystemBase {
   
@@ -61,6 +62,9 @@ export abstract class MuseumSystemBase {
   
   protected readonly museumAnchorViews: MuseumAnchorView[] = [];
   protected readonly positionRefs: Phaser.Math.Vector2[] = [];
+  
+  protected readonly disposableMap: Map<MuseumViewInterface, SimpleDisposableInterface>
+  = new Map<MuseumViewInterface, SimpleDisposableInterface>();
   
   /**
    * コンストラクタ
@@ -108,11 +112,22 @@ export abstract class MuseumSystemBase {
     if (view) {
       view.setParentTo(anchorView);
       anchorView.setContentView(view);
+      if (!this.disposableMap.has(view)) {
+        const disposable = view.onClick.subscribe(() => this.onClick(view));
+        this.disposableMap.set(view, disposable);
+      }
     } else {
       const emptyView = this.emptyViewFactory.create();
       emptyView.setParentTo(anchorView);
       anchorView.setContentView(emptyView);
     }
+  }
+  
+  /**
+   * 押下時
+   */
+  protected onClick(view: MuseumViewInterface) {
+    console.log(`@@@ onClick: ${view.shaderIndex}`);
   }
   
   /**
