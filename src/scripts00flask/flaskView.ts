@@ -23,6 +23,9 @@ import {ReadonlyObservableInterface, SimpleObservable} from "../utility/simpleOb
  */
 export class FlaskView extends Phaser.GameObjects.Container implements MuseumViewInterface{
   
+  private readonly _shaderIndex!: number; 
+  public get shaderIndex() { return this._shaderIndex; }
+  
   private parents?: Phaser.GameObjects.Container[];
   
   private flaskOutlineGraphics!: Phaser.GameObjects.Graphics;
@@ -48,13 +51,15 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     scene: Phaser.Scene,
     width: number,
     height: number,
+    shaderIndex: number,
     shaderKey: string,
     flaskLeftOutlineJsonKey:string,
     shaderObjectOffSetY: number = 180
   ) {
-    
     super(scene, 0, 0);
     scene.add.existing(this);
+    
+    this._shaderIndex = shaderIndex;
     
     // 自身のサイズ
     this.setSize(width, height);
@@ -227,18 +232,18 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
    * 作成(空)
    */
   public static CreateEmpty(scene: Phaser.Scene, flaskLeftOutlineJsonKey: string) {
-    return FlaskView.Create(scene, "", flaskLeftOutlineJsonKey);
+    return FlaskView.Create(scene, -1, "", flaskLeftOutlineJsonKey);
   }
 
   /**
    * 作成
    */
-  public static Create(scene: Phaser.Scene, shaderKey: string, flaskLeftOutlineJsonKey: string): MuseumViewInterface {
+  public static Create(scene: Phaser.Scene, shaderIndex: number, shaderKey: string, flaskLeftOutlineJsonKey: string): MuseumViewInterface {
     const canvas = scene.sys.game.canvas;
     const viewSize = {width: canvas.width, height: canvas.height};
     const initScale = FLOWING_FLASK_VIEW_SCALE;
 
-    const view = new FlaskView(scene, viewSize.width, viewSize.height, shaderKey, flaskLeftOutlineJsonKey);
+    const view = new FlaskView(scene, viewSize.width, viewSize.height, shaderIndex, shaderKey, flaskLeftOutlineJsonKey);
     view.setHidePosition();
     view.setScale(initScale, initScale);
     return view;

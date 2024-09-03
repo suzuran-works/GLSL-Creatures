@@ -9,6 +9,11 @@ import {ReadonlyObservableInterface} from "../utility/simpleObservable.ts";
 export interface MuseumViewInterface {
 
   /**
+   * シェーダインデックス
+   */
+  shaderIndex: number;
+  
+  /**
    * クリック時処理
    */
   onClick: ReadonlyObservableInterface;

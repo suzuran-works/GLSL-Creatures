@@ -121,7 +121,7 @@ export class SummaryScene extends Phaser.Scene {
       // ビューを作成
       const shaderKey = getShaderKey(CATEGORY, shaderIndex);
       const flaskOutlineJsonKey = getAssetResourceKey(PATH_JSONS.FLASK_LEFT_OUTLINE_A);
-      const view = FlaskView.Create(this, shaderKey, flaskOutlineJsonKey);
+      const view = FlaskView.Create(this, shaderIndex, shaderKey, flaskOutlineJsonKey);
       this.viewQueue.enqueue(view);
       
       await waitMilliSeconds(10);
