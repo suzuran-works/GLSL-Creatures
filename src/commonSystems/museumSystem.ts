@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {smoothstep} from "../utility/mathUtility.ts";
 import {Queue} from "../utility/queue.ts";
-import {DISPLAY_COUNT, FADE_DISTANCE, TRANSPARENT_DISTANCE} from "../scripts00flask/define.ts";
 import {ReadonlyObservableInterface} from "../utility/simpleObservable.ts";
 
 /**
@@ -36,6 +35,9 @@ export interface MuseumViewInterface {
   updateView(deltaTimeMs: number): void;
 }
 
+/**
+ * 空ビュー作成ファクトリインターフェース
+ */
 export interface EmptyMuseumViewFactoryInterface {
   
   /**
@@ -45,11 +47,31 @@ export interface EmptyMuseumViewFactoryInterface {
 }
 
 /**
+ * 一覧表示設定
+ */
+export class MuseumSetting {
+  public readonly displayCount: number;
+  public readonly fadeDistance: number;
+  public readonly transparentDistance: number;
+  
+  constructor(
+    displayCount: number,
+    fadeDistance: number,
+    transparentDistance: number
+  ) {
+    this.displayCount = displayCount;
+    this.fadeDistance = fadeDistance;
+    this.transparentDistance = transparentDistance;
+  }
+}
+
+/**
  * 一覧表示・ピックアップシステム
  */
 export class MuseumSystem {
   
   private readonly scene!: Phaser.Scene;
+  private readonly setting!: MuseumSetting;
   private readonly viewQueue!: Queue<MuseumViewInterface>;
   private readonly emptyViewFactory!: EmptyMuseumViewFactoryInterface;
   
@@ -63,10 +85,12 @@ export class MuseumSystem {
    */
   constructor(
     scene: Phaser.Scene,
+    setting: MuseumSetting,
     viewQueus: Queue<MuseumViewInterface>,
     emptyViewFactory: EmptyMuseumViewFactoryInterface
   ) {
     this.scene = scene;
+    this.setting = setting;
     this.viewQueue = viewQueus;
     this.emptyViewFactory = emptyViewFactory;
     this.createViews();
@@ -80,7 +104,7 @@ export class MuseumSystem {
     const canvas = scene.game.canvas;
 
     const width = canvas.width;
-    const count = DISPLAY_COUNT;
+    const count = this.setting.displayCount;
     const margin = width / (count - 1);
 
     const startX = 0;
@@ -143,11 +167,11 @@ export class MuseumSystem {
    * 表示更新
    */
   private updateViews(deltaTimeMs: number) {
-    const transparentDistance = TRANSPARENT_DISTANCE;
+    const transparentDistance = this.setting.fadeDistance;
     const canvasWidth = this.scene.game.canvas.width;
     const fadeThresBeginX = canvasWidth - transparentDistance;
     const fadeThresEndX = transparentDistance;
-    const fadeDistance = FADE_DISTANCE;
+    const fadeDistance = this.setting.fadeDistance;
     for (let i = 0; i < this.positionRefs.length; ++i) {
       const posRef = this.positionRefs[i];
       posRef.x += -this.SCROLL_SPEED * deltaTimeMs;

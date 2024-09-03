@@ -9,7 +9,7 @@ import {
   FLASK_OUTLINE_COLOR_VALUE_FLOATING,
   FLASK_OUTLINE_THICKNESS,
   FLASK_OUTLINE_THICKNESS_FLOATING,
-  FLOATING_FLASK_VIEW_SCALE,
+  FLOWING_FLASK_VIEW_SCALE,
   IS_EDIT_MODE, PATH_JSONS
 } from "./define.ts";
 import {getParents} from "../utility/containerUtility.ts";
@@ -175,7 +175,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
    */
   private getFlaskOutlineThickness() {
     const scale = this.scaleX;
-    const s01 = inverseLerp(FLOATING_FLASK_VIEW_SCALE, 1.0, scale);
+    const s01 = inverseLerp(FLOWING_FLASK_VIEW_SCALE, 1.0, scale);
     const thickness = Phaser.Math.Linear(FLASK_OUTLINE_THICKNESS_FLOATING, FLASK_OUTLINE_THICKNESS, s01);
     const colorValue = Phaser.Math.Linear(FLASK_OUTLINE_COLOR_VALUE_FLOATING, FLASK_OUTLINE_COLOR_VALUE, s01);
     
@@ -236,7 +236,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
   public static Create(scene: Phaser.Scene, shaderKey: string, flaskLeftOutlineJsonKey: string): MuseumViewInterface {
     const canvas = scene.sys.game.canvas;
     const viewSize = {width: canvas.width, height: canvas.height};
-    const initScale = FLOATING_FLASK_VIEW_SCALE;
+    const initScale = FLOWING_FLASK_VIEW_SCALE;
 
     const view = new FlaskView(scene, viewSize.width, viewSize.height, shaderKey, flaskLeftOutlineJsonKey);
     view.setHidePosition();

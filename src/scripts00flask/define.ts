@@ -18,7 +18,7 @@ export const PATH_JSONS = {
 }
 
 // 羅列時のフラスコビューのスケール
-export const FLOATING_FLASK_VIEW_SCALE = 0.22;
+export const FLOWING_FLASK_VIEW_SCALE = 0.22;
 
 // フラスコビューのアウトライン太さ(スケール1)
 export const FLASK_OUTLINE_THICKNESS = 4;

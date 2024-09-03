@@ -5,10 +5,10 @@ import {GetColorCodeByRGB, GetColorCodeTextByRGB} from "../utility/colorUtility.
 import {getAssetResourceKey, getShaderKey} from "../utility/assetResourceKeyUtility.ts";
 import {AssetLoader} from "../utility/assetLoader.ts";
 import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
-import {CATEGORY, DISPLAY_COUNT, PATH_JSONS, SHADER_FOLDER} from "./define.ts";
+import {CATEGORY, DISPLAY_COUNT, FADE_DISTANCE, PATH_JSONS, SHADER_FOLDER, TRANSPARENT_DISTANCE} from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
 import {BackgroundView} from "../commonViews/backgroundView.ts";
-import {MuseumSystem, MuseumViewInterface} from "../commonSystems/museumSystem.ts";
+import {MuseumSetting, MuseumSystem, MuseumViewInterface} from "../commonSystems/museumSystem.ts";
 import {BackButton} from "../commonViews/backButton.ts";
 import {TextLabel} from "../commonViews/textLabel.ts";
 import {FpsView} from "../commonViews/fpsView.ts";
@@ -81,7 +81,8 @@ export class SummaryScene extends Phaser.Scene {
     const emptyViewFactory = new EmptyFlaskViewFactory(this);
     
     // 表示システム
-    this.museumSystem = new MuseumSystem(this, this.viewQueue, emptyViewFactory);
+    const museumSetting = new MuseumSetting(DISPLAY_COUNT, FADE_DISTANCE, TRANSPARENT_DISTANCE)
+    this.museumSystem = new MuseumSystem(this, museumSetting, this.viewQueue, emptyViewFactory);
     
     // パラメータ指定がある場合はそれを優先的に表示
     // TODO:
