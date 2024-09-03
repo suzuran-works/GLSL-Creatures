@@ -13,7 +13,7 @@ import {
   IS_EDIT_MODE, PATH_JSONS
 } from "./define.ts";
 import {getParents} from "../utility/containerUtility.ts";
-import {MuseumViewInterface} from "../commonSystems/museumSystem.ts";
+import {MuseumViewInterface} from "../commonSystems/museumSystemBase.ts";
 import {inverseLerp} from "../utility/mathUtility.ts";
 import {ReadonlyObservableInterface, SimpleObservable} from "../utility/simpleObservable.ts";
 

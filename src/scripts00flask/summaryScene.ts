@@ -5,16 +5,25 @@ import {GetColorCodeByRGB, GetColorCodeTextByRGB} from "../utility/colorUtility.
 import {getAssetResourceKey, getShaderKey} from "../utility/assetResourceKeyUtility.ts";
 import {AssetLoader} from "../utility/assetLoader.ts";
 import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
-import {CATEGORY, DISPLAY_COUNT, FADE_DISTANCE, PATH_JSONS, SHADER_FOLDER, TRANSPARENT_DISTANCE} from "./define.ts";
+import {
+  CATEGORY,
+  DISPLAY_COUNT,
+  FADE_DISTANCE,
+  FLOW_SPEED,
+  PATH_JSONS,
+  SHADER_FOLDER,
+  TRANSPARENT_DISTANCE
+} from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
 import {BackgroundView} from "../commonViews/backgroundView.ts";
-import {MuseumSetting, MuseumSystem, MuseumViewInterface} from "../commonSystems/museumSystem.ts";
+import {MuseumSystemBase, MuseumViewInterface} from "../commonSystems/museumSystemBase.ts";
 import {BackButton} from "../commonViews/backButton.ts";
 import {TextLabel} from "../commonViews/textLabel.ts";
 import {FpsView} from "../commonViews/fpsView.ts";
 import {isLocalhost} from "../utility/localhostUtility.ts";
 import {Queue} from "../utility/queue.ts";
 import {waitMilliSeconds} from "../utility/asyncUtility.ts";
+import {MuseumSetting, MuseumSystemFlow} from "../commonSystems/museumSystemFlow.ts";
 
 
 /**
@@ -33,7 +42,7 @@ export class SummaryScene extends Phaser.Scene {
   // 表示物キュー
   private readonly viewQueue: Queue<MuseumViewInterface> = new Queue<MuseumViewInterface>();
   // 表示システム
-  private museumSystem!: MuseumSystem;
+  private museumSystem!: MuseumSystemBase;
 
   /**
    * コンストラクタ
@@ -81,8 +90,8 @@ export class SummaryScene extends Phaser.Scene {
     const emptyViewFactory = new EmptyFlaskViewFactory(this);
     
     // 表示システム
-    const museumSetting = new MuseumSetting(DISPLAY_COUNT, FADE_DISTANCE, TRANSPARENT_DISTANCE)
-    this.museumSystem = new MuseumSystem(this, museumSetting, this.viewQueue, emptyViewFactory);
+    const museumSetting = new MuseumSetting(DISPLAY_COUNT, FADE_DISTANCE, TRANSPARENT_DISTANCE, FLOW_SPEED)
+    this.museumSystem = new MuseumSystemFlow(this, this.viewQueue, emptyViewFactory, museumSetting);
     
     // パラメータ指定がある場合はそれを優先的に表示
     // TODO:

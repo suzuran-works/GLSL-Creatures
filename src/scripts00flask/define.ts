@@ -35,3 +35,5 @@ export const DISPLAY_COUNT = 7;
 export const TRANSPARENT_DISTANCE = 78;
 // フェード距離
 export const FADE_DISTANCE = 78;
+// 流れる速さ
+export const FLOW_SPEED = 0.022;

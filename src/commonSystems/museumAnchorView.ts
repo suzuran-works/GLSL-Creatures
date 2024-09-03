@@ -1,4 +1,4 @@
-import {MuseumViewInterface} from "./museumSystem.ts";
+import {MuseumViewInterface} from "./museumSystemBase.ts";
 
 /**
  * 一覧表示の個々のアンカー
