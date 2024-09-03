@@ -83,6 +83,8 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
   public setParentTo(parent: Phaser.GameObjects.Container) {
     parent.add(this);
     this.setPosition(0, 0);
+    this.setActive(true);
+    this.setVisible(true);
   }
   
   public removeParentFrom(parent: Phaser.GameObjects.Container) {
@@ -92,6 +94,8 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
   public setHidePosition() {
     const canvas = this.scene.game.canvas;
     this.setPosition(-canvas.width, -canvas.height);
+    this.setActive(false);
+    this.setVisible(false);
   }
 
   private addButtonRect() {
