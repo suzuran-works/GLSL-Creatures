@@ -51,5 +51,8 @@ void main( void ) {
     // 0.0: 黒い透明を完全に透明にする。(既に描画されているブレンド割合が1)
     // 1.0: 黒い部分を黒く描画する。(既に描画されている色をブレンド割合が無)
     // なので通常は0にしておくと意図的なブレンドになる
-    gl_FragColor = vec4(color * uAlpha, 0.0);
+    //gl_FragColor = vec4(color * uAlpha, 0.0);
+    
+    // 正しくは以下か？colorへの乗算と透明度の指定
+    gl_FragColor = vec4(color * uAlpha, uAlpha);
 }
