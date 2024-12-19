@@ -50,7 +50,11 @@ export const loadAssetsAsync = async (
     jsonPaths
   );
   const sceneData = { sceneModel: assetLoaderSceneModel };
-  baseScene.scene.launch(AssetLoader.Key, sceneData);
+  try {
+    baseScene.scene.launch(AssetLoader.Key, sceneData); 
+  } catch (e) {
+    console.log("AssetLoader error", e);
+  }
   await waitUntil(() => assetLoaderSceneModel.done);
   // NOTE: removeだと完全に削除されて次のlaunchが効かなくなる
   baseScene.scene.stop(AssetLoader.Key);
