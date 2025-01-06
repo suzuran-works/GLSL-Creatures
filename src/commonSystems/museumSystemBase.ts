@@ -28,6 +28,11 @@ export interface MuseumViewInterface {
    * 指定親階層から外す
    */
   removeParentFrom(parent: Phaser.GameObjects.Container): void;
+
+  /**
+   * 親階層取得
+   */
+  getParent(): Phaser.GameObjects.Container;
   
   /**
    * 隠す位置へ移動

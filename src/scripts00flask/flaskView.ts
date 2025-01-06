@@ -15,7 +15,8 @@ import {
 import {getParents} from "../utility/containerUtility.ts";
 import {MuseumViewInterface} from "../commonSystems/museumSystemBase.ts";
 import {inverseLerp} from "../utility/mathUtility.ts";
-import {ReadonlyObservableInterface, SimpleObservable} from "../utility/simpleObservable.ts";
+import {SimpleObservable} from "../utility/simpleObservable.ts";
+import {ReadonlyObservableInterface} from "../utility/simpleDisposableInterface.ts";
 
 /**
  * フラスコビュー
@@ -80,17 +81,33 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     if (shaderKey != "") this.addButtonRect();
   }
   
+  /**
+   * @inheritDoc
+   */
   public setParentTo(parent: Phaser.GameObjects.Container) {
     parent.add(this);
     this.setPosition(0, 0);
     this.setActive(true);
     this.setVisible(true);
   }
-  
+
+  /**
+   * @inheritDoc
+   */
+  public getParent() {
+    return this.parentContainer;
+  }
+
+  /**
+   * @inheritDoc
+   */
   public removeParentFrom(parent: Phaser.GameObjects.Container) {
     parent.remove(this);
   }
-  
+
+  /**
+   * @inheritDoc
+   */
   public setHidePosition() {
     const canvas = this.scene.game.canvas;
     this.setPosition(-canvas.width, -canvas.height);

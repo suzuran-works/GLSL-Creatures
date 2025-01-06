@@ -8,6 +8,8 @@ import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {smoothstep} from "../utility/mathUtility.ts";
 import {Queue} from "../utility/queue.ts";
 import {SimpleMessageArgInterface, SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
+import {tweenAsync} from "../utility/tweenAsync.ts";
+import {getLocalPos} from "../utility/transformUtility.ts";
 
 /**
  * フォーカス時メッセージ
@@ -93,14 +95,50 @@ export class MuseumSystemFlow extends MuseumSystemBase {
   }
   
   protected override async onClickAsync(view: MuseumViewInterface): Promise<void> {
+    if (this.isFocus) return;
     console.log(`@@@ onClick: ${view.shaderIndex}`);
     this.isFocus = true;
     this.messageBroker.publish(new SystemMessageArgOnFocus(this.isFocus));
+    
+    // フォーカスされたもの以外を透明に
+    const tasks: Promise<void>[] = [];
+    for (let i = 0; i < this.museumAnchorViews.length; ++i) {
+      const anchorView = this.museumAnchorViews[i];
+      if (anchorView.contentView === view) continue;
+      const task = tweenAsync(
+        this.scene, {
+          targets: anchorView,
+          alpha: 0,
+          duration: 500,
+          ease: "Quint.easeOut",
+        }
+      );
+      tasks.push(task);
+    }
+    
+    // フォーカスされたものを拡大
+    const canvas = this.scene.game.canvas;
+    const centerPosition = getLocalPos(canvas.width/2, canvas.height/2, view.getParent());
+    const focusTask = tweenAsync(
+      this.scene,
+      {
+        targets: view,
+        scaleX: 1.0,
+        scaleY: 1.0,
+        x: centerPosition.x,
+        y: centerPosition.y,
+        duration: 780,
+        ease: "Quart.easeInOut",
+      }
+    )
+    tasks.push(focusTask);
+    
+    await Promise.all(tasks);
   }
 
   protected override updateViews(deltaTimeMs: number) {
     // ズーム中は移動停止
-    if (this.isFocus) return;
+    const flowSpeed = this.isFocus ?  0 : this.setting.flowSpeed
     
     const transparentDistance = this.setting.fadeDistance;
     const canvasWidth = this.scene.game.canvas.width;
@@ -109,7 +147,7 @@ export class MuseumSystemFlow extends MuseumSystemBase {
     const fadeDistance = this.setting.fadeDistance;
     for (let i = 0; i < this.positionRefs.length; ++i) {
       const posRef = this.positionRefs[i];
-      posRef.x += -this.setting.flowSpeed * deltaTimeMs;
+      posRef.x += -flowSpeed * deltaTimeMs;
       let isReset = false;
       if (posRef.x < 0) {
         posRef.x = this.scene.game.canvas.width;
@@ -127,7 +165,7 @@ export class MuseumSystemFlow extends MuseumSystemBase {
 
       const anchorView = this.museumAnchorViews[i];
       anchorView.setPosition(posRef.x, posRef.y);
-      anchorView.setAlpha(alphaValue);
+      if (!this.isFocus) anchorView.setAlpha(alphaValue);
       if (isReset) this.linkOrCreate(anchorView);
       anchorView.updateView(deltaTimeMs);
     }

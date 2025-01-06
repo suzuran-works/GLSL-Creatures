@@ -1,5 +1,6 @@
 import {tweenAsync} from "../utility/tweenAsync.ts";
-import {ReadonlyObservableInterface, SimpleObservable} from "../utility/simpleObservable.ts";
+import {SimpleObservable} from "../utility/simpleObservable.ts";
+import {ReadonlyObservableInterface} from "../utility/simpleDisposableInterface.ts";
 
 /**
  * 戻るボタン
