@@ -11,7 +11,7 @@ import {
   FADE_DISTANCE,
   FLOW_SPEED,
   PATH_JSONS,
-  SHADER_FOLDER,
+  SHADER_FOLDER, TITLE,
   TRANSPARENT_DISTANCE
 } from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
@@ -82,7 +82,7 @@ export class SummaryScene extends Phaser.Scene {
     // テキストラベル
     this.textLabel = new TextLabel(this, GetColorCodeTextByRGB(180, 180, 180), 1, 30);
     this.textLabel.setPosition(canvas.width/2, canvas.height * 0.95);
-    this.textLabel.setText("フラスコの中のGLSL");
+    this.textLabel.setText(TITLE);
     // FPS表示
     if (isLocalhost()) new FpsView(this);
     

@@ -1,10 +1,12 @@
-
-// 編集モード
 import {isLocalhost} from "../utility/localhostUtility.ts";
 
+// 編集モード
 const EDIT_MODE = false;
 
 export const IS_EDIT_MODE = EDIT_MODE && isLocalhost();
+
+// タイトル
+export const TITLE = "フラスコの中のGLSL";
 
 // カテゴリー番号
 export const CATEGORY = 0;
