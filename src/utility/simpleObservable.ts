@@ -1,16 +1,4 @@
-/**
- * Disposableインターフェース
- */
-export interface SimpleDisposableInterface {
-  dispose(): void;
-}
-
-/**
- * 読み取り専用インターフェース
- */
-export interface ReadonlyObservableInterface {
-  subscribe(f: any): any;
-}
+import {ReadonlyObservableInterface, SimpleDisposableInterface} from "./simpleDisposableInterface.ts";
 
 /**
  * 簡易Observableクラス

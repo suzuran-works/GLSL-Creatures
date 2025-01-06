@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {Queue} from "../utility/queue.ts";
-import {ReadonlyObservableInterface, SimpleDisposableInterface} from "../utility/simpleObservable.ts";
+import {ReadonlyObservableInterface, SimpleDisposableInterface} from "../utility/simpleDisposableInterface.ts";
+import {SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
 
 /**
  * コンテンツビューインターフェース
@@ -63,18 +64,24 @@ export abstract class MuseumSystemBase {
   protected readonly museumAnchorViews: MuseumAnchorView[] = [];
   protected readonly positionRefs: Phaser.Math.Vector2[] = [];
   
-  protected readonly disposableMap: Map<MuseumViewInterface, SimpleDisposableInterface>
+  protected readonly viewDisposableMap: Map<MuseumViewInterface, SimpleDisposableInterface>
   = new Map<MuseumViewInterface, SimpleDisposableInterface>();
+
+  protected readonly disposables: SimpleDisposableInterface[] = [];
+  
+  protected readonly messageBroker!: SimpleMessageBroker;
   
   /**
    * コンストラクタ
    */
   protected constructor(
     scene: Phaser.Scene,
+    messageBroker: SimpleMessageBroker,
     viewQueus: Queue<MuseumViewInterface>,
-    emptyViewFactory: EmptyMuseumViewFactoryInterface
+    emptyViewFactory: EmptyMuseumViewFactoryInterface,
   ) {
     this.scene = scene;
+    this.messageBroker = messageBroker;
     this.viewQueue = viewQueus;
     this.emptyViewFactory = emptyViewFactory;
   }
@@ -112,9 +119,9 @@ export abstract class MuseumSystemBase {
     if (view) {
       view.setParentTo(anchorView);
       anchorView.setContentView(view);
-      if (!this.disposableMap.has(view)) {
+      if (!this.viewDisposableMap.has(view)) {
         const disposable = view.onClick.subscribe(() => this.onClickAsync(view).then());
-        this.disposableMap.set(view, disposable);
+        this.viewDisposableMap.set(view, disposable);
       }
     } else {
       const emptyView = this.emptyViewFactory.create();
@@ -139,4 +146,19 @@ export abstract class MuseumSystemBase {
    * 表示更新
    */
   protected abstract updateViews(deltaTimeMs: number) : void;
+  
+  /**
+   * 破棄
+   */
+  public dispose() {
+    for (const disposable of this.disposables) {
+      disposable.dispose();
+    }
+    this.disposables.length = 0;
+    
+    for (const disposable of this.viewDisposableMap.values()) {
+      disposable.dispose();
+    }
+    this.viewDisposableMap.clear();
+  }
 }

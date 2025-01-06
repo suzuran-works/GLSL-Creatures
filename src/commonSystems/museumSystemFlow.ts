@@ -7,6 +7,22 @@ import Phaser from "phaser";
 import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {smoothstep} from "../utility/mathUtility.ts";
 import {Queue} from "../utility/queue.ts";
+import {SimpleMessageArgInterface, SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
+
+/**
+ * フォーカス時メッセージ
+ */
+export class SystemMessageArgOnFocus
+  implements SimpleMessageArgInterface
+{
+  public static readonly KEY = "SystemMessageArgOnFocus";
+  public readonly mappingKey = SystemMessageArgOnFocus.KEY;
+  
+  public isFocus: boolean;
+  constructor(isFocus: boolean) {
+    this.isFocus = isFocus;
+  }
+}
 
 /**
  * 一覧表示設定
@@ -37,16 +53,19 @@ export class MuseumSystemFlow extends MuseumSystemBase {
 
   protected readonly setting!: MuseumSetting;
   
+  private isFocus = false;
+  
   /**
    * コンストラクタ
    */
   constructor(
     scene: Phaser.Scene,
+    messageBroker: SimpleMessageBroker,
     viewQueus: Queue<MuseumViewInterface>,
     emptyViewFactory: EmptyMuseumViewFactoryInterface,
     setting: MuseumSetting,
   ) {
-    super(scene, viewQueus, emptyViewFactory);
+    super(scene, messageBroker, viewQueus, emptyViewFactory);
     this.setting = setting;
     this.createViews();
   }
@@ -75,9 +94,14 @@ export class MuseumSystemFlow extends MuseumSystemBase {
   
   protected override async onClickAsync(view: MuseumViewInterface): Promise<void> {
     console.log(`@@@ onClick: ${view.shaderIndex}`);
+    this.isFocus = true;
+    this.messageBroker.publish(new SystemMessageArgOnFocus(this.isFocus));
   }
 
   protected override updateViews(deltaTimeMs: number) {
+    // ズーム中は移動停止
+    if (this.isFocus) return;
+    
     const transparentDistance = this.setting.fadeDistance;
     const canvasWidth = this.scene.game.canvas.width;
     const fadeThresBeginX = canvasWidth - transparentDistance;

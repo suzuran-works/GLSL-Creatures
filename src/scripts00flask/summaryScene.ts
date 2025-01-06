@@ -25,7 +25,8 @@ import {FpsView} from "../commonViews/fpsView.ts";
 import {isLocalhost} from "../utility/localhostUtility.ts";
 import {Queue} from "../utility/queue.ts";
 import {waitMilliSeconds} from "../utility/asyncUtility.ts";
-import {MuseumSetting, MuseumSystemFlow} from "../commonSystems/museumSystemFlow.ts";
+import {MuseumSetting, MuseumSystemFlow, SystemMessageArgOnFocus} from "../commonSystems/museumSystemFlow.ts";
+import {SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
 
 
 /**
@@ -45,6 +46,9 @@ export class SummaryScene extends Phaser.Scene {
   private readonly viewQueue: Queue<MuseumViewInterface> = new Queue<MuseumViewInterface>();
   // 表示システム
   private museumSystem!: MuseumSystemBase;
+  
+  // メッセージブローカ
+  private readonly messageBroker = new SimpleMessageBroker();
 
   /**
    * コンストラクタ
@@ -93,14 +97,20 @@ export class SummaryScene extends Phaser.Scene {
     
     // 表示システム
     const museumSetting = new MuseumSetting(DISPLAY_COUNT, FADE_DISTANCE, TRANSPARENT_DISTANCE, FLOW_SPEED)
-    this.museumSystem = new MuseumSystemFlow(this, this.viewQueue, emptyViewFactory, museumSetting);
+    this.museumSystem = new MuseumSystemFlow(this, this.messageBroker, this.viewQueue, emptyViewFactory, museumSetting);
     
     // パラメータ指定がある場合はそれを優先的に表示
-    // TODO:
+    // TODO: その内容が中央になるようにする
 
     // 戻る押下時
     this.backButton.onClick.subscribe(() => {
       console.log('onClick back button');
+    });
+    
+    // フォーカス時
+    this.messageBroker.subscribe(SystemMessageArgOnFocus.KEY, (a) => {
+      const arg = a as SystemMessageArgOnFocus;
+      if (isLocalhost()) console.log(`onFocus: ${arg.isFocus}`);
     });
     
     // 表示物をロード

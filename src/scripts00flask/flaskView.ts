@@ -115,7 +115,6 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
       const alpha = this.getApparentlyAlpha();
       if (alpha < 1) return;
       this._onClick.on(undefined);
-      console.log("FlaskView.onClick");
     });
   }
   
