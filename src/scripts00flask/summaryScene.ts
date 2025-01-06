@@ -1,15 +1,17 @@
 import Phaser from 'phaser';
 import {createConfig} from "../define.ts";
 import {EmptyFlaskViewFactory, FlaskView} from "./flaskView.ts";
-import {GetColorCodeByRGB, GetColorCodeTextByRGB} from "../utility/colorUtility.ts";
 import {getAssetResourceKey, getShaderKey} from "../utility/assetResourceKeyUtility.ts";
 import {AssetLoader} from "../utility/assetLoader.ts";
 import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
 import {
+  BACK_BUTTON_ALPHA,
+  BACK_BUTTON_COLOR,
+  BACKGROUND_COLOR,
   CATEGORY,
   DISPLAY_COUNT,
   FADE_DISTANCE,
-  FLOW_SPEED,
+  FLOW_SPEED, LABEL_TEXT_COLOR, LABEL_TEXT_SIZE,
   PATH_JSONS,
   SHADER_FOLDER, TITLE,
   TRANSPARENT_DISTANCE
@@ -76,11 +78,11 @@ export class SummaryScene extends Phaser.Scene {
     const canvas = this.game.canvas;
 
     // 背景
-    new BackgroundView(this, GetColorCodeByRGB(0, 0, 0));
+    new BackgroundView(this, BACKGROUND_COLOR);
     // 戻るボタン
-    this.backButton = new BackButton(this, GetColorCodeByRGB(78,78,78), 0.5);
+    this.backButton = new BackButton(this, BACK_BUTTON_COLOR, BACK_BUTTON_ALPHA);
     // テキストラベル
-    this.textLabel = new TextLabel(this, GetColorCodeTextByRGB(180, 180, 180), 1, 30);
+    this.textLabel = new TextLabel(this, LABEL_TEXT_COLOR, 1, LABEL_TEXT_SIZE);
     this.textLabel.setPosition(canvas.width/2, canvas.height * 0.95);
     this.textLabel.setText(TITLE);
     // FPS表示
