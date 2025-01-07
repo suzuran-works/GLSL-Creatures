@@ -18,14 +18,14 @@ import {
 } from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
 import {BackgroundView} from "../commonViews/backgroundView.ts";
-import {MuseumSystemBase, MuseumViewInterface} from "../commonSystems/museumSystemBase.ts";
+import {MuseumSystemBase, MuseumViewInterface, SystemMessageArgFocus} from "../commonSystems/museumSystemBase.ts";
 import {BackButton} from "../commonViews/backButton.ts";
 import {TextLabel} from "../commonViews/textLabel.ts";
 import {FpsView} from "../commonViews/fpsView.ts";
 import {isLocalhost} from "../utility/localhostUtility.ts";
 import {Queue} from "../utility/queue.ts";
 import {waitMilliSeconds} from "../utility/asyncUtility.ts";
-import {MuseumSetting, MuseumSystemFlow, SystemMessageArgOnFocus} from "../commonSystems/museumSystemFlow.ts";
+import {MuseumSetting, MuseumSystemFlow} from "../commonSystems/museumSystemFlow.ts";
 import {SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
 
 
@@ -37,19 +37,22 @@ export class SummaryScene extends Phaser.Scene {
   // シーンキー
   public static Key = 'SummaryScene';
   
+  // メッセージブローカ
+  private readonly messageBroker = new SimpleMessageBroker();
+  
   // 戻るボタン
   private backButton!: BackButton;
   // テキストラベル
   private textLabel!: TextLabel;
-  
   // 表示物キュー
   private readonly viewQueue: Queue<MuseumViewInterface> = new Queue<MuseumViewInterface>();
+  
   // 表示システム
   private museumSystem!: MuseumSystemBase;
-  
-  // メッセージブローカ
-  private readonly messageBroker = new SimpleMessageBroker();
 
+  // 表示フラグ
+  private isShow = false;
+  
   /**
    * コンストラクタ
    */
@@ -100,17 +103,6 @@ export class SummaryScene extends Phaser.Scene {
     const museumSetting = new MuseumSetting(DISPLAY_COUNT, FADE_DISTANCE, TRANSPARENT_DISTANCE, FLOW_SPEED)
     this.museumSystem = new MuseumSystemFlow(this, this.messageBroker, this.viewQueue, emptyViewFactory, this.backButton, museumSetting);
     
-    // 戻る押下時
-    this.backButton.onClick.subscribe(() => {
-      if (isLocalhost()) console.log('onClick back button');
-    });
-    
-    // フォーカス時
-    this.messageBroker.subscribe(SystemMessageArgOnFocus.KEY, (a) => {
-      const arg = a as SystemMessageArgOnFocus;
-      if (isLocalhost()) console.log(`onFocus: ${arg.isFocus}`);
-    });
-    
     // 表示物をロード
     this.loadMuseumViewsAsync(idx).then();
   }
@@ -121,6 +113,7 @@ export class SummaryScene extends Phaser.Scene {
   private async loadMuseumViewsAsync(idx: string | null) {
     const invalidNumber = -1;
     const initialFocusIndex = idx ? parseInt(idx, 10) : invalidNumber;
+    let initialFocusView: MuseumViewInterface | undefined = undefined;
     let shaderIndex = 0;
     let createCount = 0;
     
@@ -129,19 +122,22 @@ export class SummaryScene extends Phaser.Scene {
       // シェーダーをロード
       const loadModel = await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, sIndex);
       // ロード失敗したらループを抜ける
-      if (loadModel.failCount > 0) return {isFail: true};
+      if (loadModel.failCount > 0) return {view: undefined, isFail: true};
       // ビューを作成
       const shaderKey = getShaderKey(CATEGORY, sIndex);
       const flaskOutlineJsonKey = getAssetResourceKey(PATH_JSONS.FLASK_LEFT_OUTLINE_A);
       const view = FlaskView.Create(this, sIndex, shaderKey, flaskOutlineJsonKey);
       this.viewQueue.enqueue(view);
-      return {isFail: false};
+      return {view:view, isFail: false};
     }
     
     // initialFocusIndexが指定されている場合はそのシェーダーをロード
     if (initialFocusIndex !== invalidNumber) {
       const loadInfo = await loadAsync(initialFocusIndex);
-      if (!loadInfo.isFail) createCount++;
+      if (!loadInfo.isFail) {
+        createCount++;
+        initialFocusView = loadInfo.view;
+      }
     }
     
     // その他ロード
@@ -158,12 +154,25 @@ export class SummaryScene extends Phaser.Scene {
       createCount++;
 
       // 指定個数まで作れたら陳列を表示
-      if (createCount === DISPLAY_COUNT) this.museumSystem.attachAll();
+      if (createCount === DISPLAY_COUNT) this.tryShowAsync(initialFocusView).then();
     }
     // 指定個数まで作れていなかった場合を考慮
-    if (createCount < DISPLAY_COUNT) this.museumSystem.attachAll();
+    if (createCount < DISPLAY_COUNT) this.tryShowAsync(initialFocusView).then();
 
     console.log(`loadMuseumViewsAsync finish noLoadIndex: ${shaderIndex}`);
+  }
+
+  /**
+   * 表示を試みる(表示済であれば早期終了)
+   */
+  private async tryShowAsync(initialFocusView?: MuseumViewInterface | undefined) {
+    if (this.isShow) return;
+    this.isShow = true;
+
+    // 陳列を表示
+    this.museumSystem.attachAll();
+    // 初期フォーカス指定があればそれをフォーカスするメッセージを発行
+    if (initialFocusView) this.messageBroker.publish(new SystemMessageArgFocus(initialFocusView));
   }
   
   update() {

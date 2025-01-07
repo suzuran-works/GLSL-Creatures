@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {Queue} from "../utility/queue.ts";
 import {ReadonlyObservableInterface, SimpleDisposableInterface} from "../utility/simpleDisposableInterface.ts";
-import {SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
+import {SimpleMessageArgInterface, SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
 import {BackButton} from "../commonViews/backButton.ts";
 
 /**
@@ -63,6 +63,21 @@ export interface EmptyMuseumViewFactoryInterface {
 }
 
 /**
+ * 初期フォーカスメッセージ
+ */
+export class SystemMessageArgFocus
+  implements SimpleMessageArgInterface
+{
+  public static readonly KEY = "SystemMessageArgFocus";
+  public readonly mappingKey = SystemMessageArgFocus.KEY;
+
+  public readonly view: MuseumViewInterface;
+  constructor(view: MuseumViewInterface) {
+    this.view = view;
+  }
+}
+
+/**
  * 一覧表示・ピックアップシステム
  * 現状MuseumViewは表示個数のみを生成するわけではなく、作られるだけ作られる。
  */
@@ -98,6 +113,14 @@ export abstract class MuseumSystemBase {
     this.viewQueue = viewQueus;
     this.emptyViewFactory = emptyViewFactory;
     this.backButton = backButton;
+    
+    // フォーカス指定メッセージ購読
+    this.disposables.push(
+      messageBroker.subscribe(SystemMessageArgFocus.KEY, (a) => {
+        const arg = a as SystemMessageArgFocus;
+        this.onClickAsync(arg.view).then();
+      })
+    )
   }
   
   /**

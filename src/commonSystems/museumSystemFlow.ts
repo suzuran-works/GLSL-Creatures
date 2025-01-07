@@ -7,26 +7,11 @@ import Phaser from "phaser";
 import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {smoothstep} from "../utility/mathUtility.ts";
 import {Queue} from "../utility/queue.ts";
-import {SimpleMessageArgInterface, SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
+import {SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
 import {tweenAsync} from "../utility/tweenAsync.ts";
 import {getLocalPos} from "../utility/transformUtility.ts";
 import {BackButton} from "../commonViews/backButton.ts";
 import {waitUntil} from "../utility/asyncUtility.ts";
-
-/**
- * フォーカス時メッセージ
- */
-export class SystemMessageArgOnFocus
-  implements SimpleMessageArgInterface
-{
-  public static readonly KEY = "SystemMessageArgOnFocus";
-  public readonly mappingKey = SystemMessageArgOnFocus.KEY;
-  
-  public isFocus: boolean;
-  constructor(isFocus: boolean) {
-    this.isFocus = isFocus;
-  }
-}
 
 /**
  * 一覧表示設定
@@ -100,7 +85,6 @@ export class MuseumSystemFlow extends MuseumSystemBase {
   protected override async onClickAsync(view: MuseumViewInterface): Promise<void> {
     if (this.isFocus) return;
     this.isFocus = true;
-    this.messageBroker.publish(new SystemMessageArgOnFocus(this.isFocus));
 
     const prevAlphas: number[] = [];
     const focusTasks: Promise<void>[] = [];
@@ -110,11 +94,11 @@ export class MuseumSystemFlow extends MuseumSystemBase {
     for (let i = 0; i < this.museumAnchorViews.length; ++i) {
       const anchorView = this.museumAnchorViews[i];
       prevAlphas.push(anchorView.alpha);
-      if (anchorView.contentView === view) continue;
+      const a = anchorView.contentView === view ? 1 : 0;
       const task = tweenAsync(
         this.scene, {
           targets: anchorView,
-          alpha: 0,
+          alpha: a,
           duration: 500,
           ease: "Quint.easeOut",
         }
@@ -182,14 +166,13 @@ export class MuseumSystemFlow extends MuseumSystemBase {
     for (let i = 0; i < this.museumAnchorViews.length; ++i) {
       const anchorView = this.museumAnchorViews[i];
       const prevAlpha = prevAlphas[i];
-      if (anchorView.contentView === view) continue;
       const task = tweenAsync(
         this.scene, {
           delay: 500,
           targets: anchorView,
           alpha: prevAlpha,
           duration: 200,
-          ease: "Quint.easeOut",
+          ease: "Quart.easeIn",
         }
       );
       unFocusTasks.push(task);
