@@ -8,7 +8,7 @@ import {
   BACK_BUTTON_ALPHA,
   BACK_BUTTON_COLOR,
   BACKGROUND_COLOR,
-  CATEGORY,
+  CATEGORY, DefineDepth,
   DISPLAY_COUNT,
   FADE_DISTANCE,
   FLOW_SPEED, LABEL_TEXT_COLOR, LABEL_TEXT_SIZE,
@@ -89,6 +89,7 @@ export class SummaryScene extends Phaser.Scene {
     this.textLabel = new TextLabel(this, LABEL_TEXT_COLOR, 1, LABEL_TEXT_SIZE);
     this.textLabel.setPosition(canvas.width/2, canvas.height * 0.95);
     this.textLabel.setText(TITLE);
+    this.textLabel.setDepth(DefineDepth.UI);
     // FPS表示
     if (isLocalhost()) new FpsView(this);
     
@@ -97,7 +98,7 @@ export class SummaryScene extends Phaser.Scene {
     
     // 表示システム
     const museumSetting = new MuseumSetting(DISPLAY_COUNT, FADE_DISTANCE, TRANSPARENT_DISTANCE, FLOW_SPEED)
-    this.museumSystem = new MuseumSystemFlow(this, this.messageBroker, this.viewQueue, emptyViewFactory, museumSetting);
+    this.museumSystem = new MuseumSystemFlow(this, this.messageBroker, this.viewQueue, emptyViewFactory, this.backButton, museumSetting);
     
     // パラメータ指定がある場合はそれを優先的に表示
     // TODO: その内容が中央になるようにする

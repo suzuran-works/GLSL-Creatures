@@ -114,6 +114,13 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     this.setActive(false);
     this.setVisible(false);
   }
+  
+  /**
+   * @inheritDoc
+   */
+  public getScale() {
+    return {x: this.scaleX, y: this.scaleY};
+  }
 
   /**
    * ボタン追加

@@ -9,17 +9,6 @@ export const IS_EDIT_MODE = EDIT_MODE && isLocalhost();
 // タイトル
 export const TITLE = "フラスコの中のGLSL";
 
-// 背景色
-export const BACKGROUND_COLOR = GetColorCodeByRGB(0, 0, 0);
-// 戻るボタン色
-export const BACK_BUTTON_COLOR = GetColorCodeByRGB(78, 78, 78);
-// 戻るボタン透明度
-export const BACK_BUTTON_ALPHA = 0.5;
-// ラベルテキスト色
-export const LABEL_TEXT_COLOR = GetColorCodeTextByRGB(180, 180, 180);
-// ラベルテキストサイズ
-export const LABEL_TEXT_SIZE = 30;
-
 // カテゴリー番号
 export const CATEGORY = 0;
 
@@ -29,6 +18,14 @@ export const SHADER_FOLDER = 'shaders00flask';
 // jsonファイルパス
 export const PATH_JSONS = {
   FLASK_LEFT_OUTLINE_A: `../jsons/jsons00flask/flaskLeftOutlineA.json`
+}
+
+/**
+ * 表示オーダー
+ */
+export const DefineDepth = {
+  BACKGROUND: -1,
+  UI: 100,
 }
 
 // 羅列時のフラスコビューのスケール
@@ -51,3 +48,14 @@ export const TRANSPARENT_DISTANCE = 78;
 export const FADE_DISTANCE = 78;
 // 流れる速さ
 export const FLOW_SPEED = 0.022;
+
+// 背景色
+export const BACKGROUND_COLOR = GetColorCodeByRGB(0, 0, 0);
+// 戻るボタン色
+export const BACK_BUTTON_COLOR = GetColorCodeByRGB(78, 78, 78);
+// 戻るボタン透明度
+export const BACK_BUTTON_ALPHA = 0.5;
+// ラベルテキスト色
+export const LABEL_TEXT_COLOR = GetColorCodeTextByRGB(180, 180, 180);
+// ラベルテキストサイズ
+export const LABEL_TEXT_SIZE = 30;

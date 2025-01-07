@@ -3,6 +3,7 @@ import {MuseumAnchorView} from "./museumAnchorView.ts";
 import {Queue} from "../utility/queue.ts";
 import {ReadonlyObservableInterface, SimpleDisposableInterface} from "../utility/simpleDisposableInterface.ts";
 import {SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
+import {BackButton} from "../commonViews/backButton.ts";
 
 /**
  * コンテンツビューインターフェース
@@ -43,6 +44,11 @@ export interface MuseumViewInterface {
    * フレーム更新
    */
   updateView(deltaTimeMs: number): void;
+  
+  /**
+   * スケール取得
+   */
+  getScale(): {x: number, y: number};
 }
 
 /**
@@ -65,6 +71,7 @@ export abstract class MuseumSystemBase {
   protected readonly scene!: Phaser.Scene;
   protected readonly viewQueue!: Queue<MuseumViewInterface>;
   protected readonly emptyViewFactory!: EmptyMuseumViewFactoryInterface;
+  protected readonly backButton!: BackButton;
   
   protected readonly museumAnchorViews: MuseumAnchorView[] = [];
   protected readonly positionRefs: Phaser.Math.Vector2[] = [];
@@ -84,11 +91,13 @@ export abstract class MuseumSystemBase {
     messageBroker: SimpleMessageBroker,
     viewQueus: Queue<MuseumViewInterface>,
     emptyViewFactory: EmptyMuseumViewFactoryInterface,
+    backButton: BackButton
   ) {
     this.scene = scene;
     this.messageBroker = messageBroker;
     this.viewQueue = viewQueus;
     this.emptyViewFactory = emptyViewFactory;
+    this.backButton = backButton;
   }
   
   /**

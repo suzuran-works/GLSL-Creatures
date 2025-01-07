@@ -10,6 +10,8 @@ import {Queue} from "../utility/queue.ts";
 import {SimpleMessageArgInterface, SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
 import {tweenAsync} from "../utility/tweenAsync.ts";
 import {getLocalPos} from "../utility/transformUtility.ts";
+import {BackButton} from "../commonViews/backButton.ts";
+import {waitUntil} from "../utility/asyncUtility.ts";
 
 /**
  * フォーカス時メッセージ
@@ -65,9 +67,10 @@ export class MuseumSystemFlow extends MuseumSystemBase {
     messageBroker: SimpleMessageBroker,
     viewQueus: Queue<MuseumViewInterface>,
     emptyViewFactory: EmptyMuseumViewFactoryInterface,
+    backButton: BackButton,
     setting: MuseumSetting,
   ) {
-    super(scene, messageBroker, viewQueus, emptyViewFactory);
+    super(scene, messageBroker, viewQueus, emptyViewFactory, backButton);
     this.setting = setting;
     this.createViews();
   }
@@ -99,11 +102,15 @@ export class MuseumSystemFlow extends MuseumSystemBase {
     console.log(`@@@ onClick: ${view.shaderIndex}`);
     this.isFocus = true;
     this.messageBroker.publish(new SystemMessageArgOnFocus(this.isFocus));
-    
+
+    const prevAlphas: number[] = [];
+    const focusTasks: Promise<void>[] = [];
+    const unFocusTasks: Promise<void>[] = [];
+
     // フォーカスされたもの以外を透明に
-    const tasks: Promise<void>[] = [];
     for (let i = 0; i < this.museumAnchorViews.length; ++i) {
       const anchorView = this.museumAnchorViews[i];
+      prevAlphas.push(anchorView.alpha);
       if (anchorView.contentView === view) continue;
       const task = tweenAsync(
         this.scene, {
@@ -113,10 +120,11 @@ export class MuseumSystemFlow extends MuseumSystemBase {
           ease: "Quint.easeOut",
         }
       );
-      tasks.push(task);
+      focusTasks.push(task);
     }
     
     // フォーカスされたものを拡大
+    const prevScale = view.getScale();
     const canvas = this.scene.game.canvas;
     const centerPosition = getLocalPos(canvas.width/2, canvas.height/2, view.getParent());
     const focusTask = tweenAsync(
@@ -131,9 +139,66 @@ export class MuseumSystemFlow extends MuseumSystemBase {
         ease: "Quart.easeInOut",
       }
     )
-    tasks.push(focusTask);
+    focusTasks.push(focusTask);
     
-    await Promise.all(tasks);
+    await Promise.all(focusTasks);
+    
+    // 戻るボタンを表示する
+    await tweenAsync(this.scene, {
+      targets: this.backButton,
+      alpha: 1,
+      duration: 780,
+    });
+    
+    let backClicked = false;
+    const disposable = this.backButton.onClick.subscribe(() => {
+      backClicked = true;
+    });
+    await  waitUntil(() => backClicked);
+    disposable.dispose();
+    
+    // 戻るボタンを非表示に
+    await tweenAsync(this.scene, {
+      targets: this.backButton,
+      alpha: 0,
+      duration: 78,
+    });
+    
+    // フォーカスされたものをもとの大きさに
+    const unfocusTask = tweenAsync(
+      this.scene,
+      {
+        targets: view,
+        scaleX: prevScale.x,
+        scaleY: prevScale.y,
+        x: 0,
+        y: 0,
+        duration: 780,
+        ease: "Quart.easeInOut",
+      }
+    );
+    unFocusTasks.push(unfocusTask);
+    
+    // 透明になったものをもとに戻す
+    for (let i = 0; i < this.museumAnchorViews.length; ++i) {
+      const anchorView = this.museumAnchorViews[i];
+      const prevAlpha = prevAlphas[i];
+      if (anchorView.contentView === view) continue;
+      const task = tweenAsync(
+        this.scene, {
+          delay: 500,
+          targets: anchorView,
+          alpha: prevAlpha,
+          duration: 200,
+          ease: "Quint.easeOut",
+        }
+      );
+      unFocusTasks.push(task);
+    }
+    
+    await Promise.all(unFocusTasks);
+
+    this.isFocus = false;
   }
 
   protected override updateViews(deltaTimeMs: number) {
