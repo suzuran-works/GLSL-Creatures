@@ -100,9 +100,6 @@ export class SummaryScene extends Phaser.Scene {
     const museumSetting = new MuseumSetting(DISPLAY_COUNT, FADE_DISTANCE, TRANSPARENT_DISTANCE, FLOW_SPEED)
     this.museumSystem = new MuseumSystemFlow(this, this.messageBroker, this.viewQueue, emptyViewFactory, this.backButton, museumSetting);
     
-    // パラメータ指定がある場合はそれを優先的に表示
-    // TODO: その内容が中央になるようにする
-
     // 戻る押下時
     this.backButton.onClick.subscribe(() => {
       if (isLocalhost()) console.log('onClick back button');
@@ -121,30 +118,35 @@ export class SummaryScene extends Phaser.Scene {
   /**
    * シェーダーロード失敗するまでロード
    */
-  private async loadMuseumViewsAsync() {
+  private async loadMuseumViewsAsync(idx: number | undefined = undefined) {
     let shaderIndex = 0;
+    let createCount = 0;
     
-    while (true) {
+    const loadAsync = async (shaderIndex: number) => {
       // シェーダーをロード
       const loadModel = await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, shaderIndex);
-      
       // ロード失敗したらループを抜ける
-      if (loadModel.failCount > 0) break;
-
+      if (loadModel.failCount > 0) return {isFail: true};
       // ビューを作成
       const shaderKey = getShaderKey(CATEGORY, shaderIndex);
       const flaskOutlineJsonKey = getAssetResourceKey(PATH_JSONS.FLASK_LEFT_OUTLINE_A);
       const view = FlaskView.Create(this, shaderIndex, shaderKey, flaskOutlineJsonKey);
       this.viewQueue.enqueue(view);
-      
+      return {isFail: false};
+    }
+    
+    while (true) {
+      const loadInfo = await loadAsync(shaderIndex);
+      if (loadInfo.isFail) break;
       await waitMilliSeconds(10);
       shaderIndex++;
+      createCount++;
 
       // 指定個数まで作れたら陳列を表示
-      if (shaderIndex == DISPLAY_COUNT) this.museumSystem.attachAll();
+      if (createCount == DISPLAY_COUNT) this.museumSystem.attachAll();
     }
     // 指定個数まで作れていなかった場合を考慮
-    if (shaderIndex < DISPLAY_COUNT) this.museumSystem.attachAll();
+    if (createCount < DISPLAY_COUNT) this.museumSystem.attachAll();
 
     console.log(`loadMuseumViewsAsync finish noLoadIndex: ${shaderIndex}`);
   }
