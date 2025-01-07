@@ -99,7 +99,6 @@ export class MuseumSystemFlow extends MuseumSystemBase {
   
   protected override async onClickAsync(view: MuseumViewInterface): Promise<void> {
     if (this.isFocus) return;
-    console.log(`@@@ onClick: ${view.shaderIndex}`);
     this.isFocus = true;
     this.messageBroker.publish(new SystemMessageArgOnFocus(this.isFocus));
 

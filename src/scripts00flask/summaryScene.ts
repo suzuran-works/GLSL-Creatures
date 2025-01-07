@@ -105,7 +105,7 @@ export class SummaryScene extends Phaser.Scene {
 
     // 戻る押下時
     this.backButton.onClick.subscribe(() => {
-      console.log('onClick back button');
+      if (isLocalhost()) console.log('onClick back button');
     });
     
     // フォーカス時
