@@ -112,30 +112,45 @@ export class SummaryScene extends Phaser.Scene {
     });
     
     // 表示物をロード
-    this.loadMuseumViewsAsync().then();
+    this.loadMuseumViewsAsync(idx).then();
   }
 
   /**
    * シェーダーロード失敗するまでロード
    */
-  private async loadMuseumViewsAsync(idx: number | undefined = undefined) {
+  private async loadMuseumViewsAsync(idx: string | null) {
+    const invalidNumber = -1;
+    const initialFocusIndex = idx ? parseInt(idx, 10) : invalidNumber;
     let shaderIndex = 0;
     let createCount = 0;
     
-    const loadAsync = async (shaderIndex: number) => {
+    // シェーダーをロードしてビューを作成
+    const loadAsync = async (sIndex: number) => {
       // シェーダーをロード
-      const loadModel = await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, shaderIndex);
+      const loadModel = await loadSingleShaderTextAsync(this, SHADER_FOLDER, CATEGORY, sIndex);
       // ロード失敗したらループを抜ける
       if (loadModel.failCount > 0) return {isFail: true};
       // ビューを作成
-      const shaderKey = getShaderKey(CATEGORY, shaderIndex);
+      const shaderKey = getShaderKey(CATEGORY, sIndex);
       const flaskOutlineJsonKey = getAssetResourceKey(PATH_JSONS.FLASK_LEFT_OUTLINE_A);
-      const view = FlaskView.Create(this, shaderIndex, shaderKey, flaskOutlineJsonKey);
+      const view = FlaskView.Create(this, sIndex, shaderKey, flaskOutlineJsonKey);
       this.viewQueue.enqueue(view);
       return {isFail: false};
     }
     
+    // initialFocusIndexが指定されている場合はそのシェーダーをロード
+    if (initialFocusIndex !== invalidNumber) {
+      const loadInfo = await loadAsync(initialFocusIndex);
+      if (!loadInfo.isFail) createCount++;
+    }
+    
+    // その他ロード
     while (true) {
+      if (shaderIndex === initialFocusIndex) {
+        shaderIndex++;
+        continue;
+      }
+      
       const loadInfo = await loadAsync(shaderIndex);
       if (loadInfo.isFail) break;
       await waitMilliSeconds(10);
@@ -143,7 +158,7 @@ export class SummaryScene extends Phaser.Scene {
       createCount++;
 
       // 指定個数まで作れたら陳列を表示
-      if (createCount == DISPLAY_COUNT) this.museumSystem.attachAll();
+      if (createCount === DISPLAY_COUNT) this.museumSystem.attachAll();
     }
     // 指定個数まで作れていなかった場合を考慮
     if (createCount < DISPLAY_COUNT) this.museumSystem.attachAll();
