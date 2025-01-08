@@ -168,6 +168,21 @@ export class SummaryScene extends Phaser.Scene {
   private async tryShowAsync(initialFocusView?: MuseumViewInterface | undefined) {
     if (this.isShow) return;
     this.isShow = true;
+    
+    // 初期フォーカスされるものが中央に来るように細工
+    if (initialFocusView) {
+      const count = Math.floor(this.viewQueue.size());
+      if (count < DISPLAY_COUNT/2) {
+        const v = this.viewQueue.dequeue();
+        if (v) this.viewQueue.enqueue(v);
+      } else {
+        const pickCount = count - DISPLAY_COUNT/2;
+        for (let i = 0; i < pickCount; i++) {
+          const v = this.viewQueue.dequeue();
+          if (v) this.viewQueue.enqueue(v);
+        }
+      }
+    }
 
     // 陳列を表示
     this.museumSystem.attachAll();
