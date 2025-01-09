@@ -116,6 +116,7 @@ export class SummaryScene extends Phaser.Scene {
     let initialFocusView: MuseumViewInterface | undefined = undefined;
     let shaderIndex = 0;
     let createCount = 0;
+    const debugMaxIndex: number | undefined = undefined;
     
     // シェーダーをロードしてビューを作成
     const loadAsync = async (sIndex: number) => {
@@ -149,6 +150,7 @@ export class SummaryScene extends Phaser.Scene {
       
       const loadInfo = await loadAsync(shaderIndex);
       if (loadInfo.isFail) break;
+      if (debugMaxIndex! && shaderIndex >= debugMaxIndex) break;
       await waitMilliSeconds(10);
       shaderIndex++;
       createCount++;
@@ -167,7 +169,6 @@ export class SummaryScene extends Phaser.Scene {
    */
   private async tryShowAsync(initialFocusView?: MuseumViewInterface | undefined) {
     if (this.isShow) return;
-    this.isShow = true;
     
     // 初期フォーカスされるものが中央に来るように細工
     if (initialFocusView) {
@@ -188,9 +189,13 @@ export class SummaryScene extends Phaser.Scene {
     this.museumSystem.attachAll();
     // 初期フォーカス指定があればそれをフォーカスするメッセージを発行
     if (initialFocusView) this.messageBroker.publish(new SystemMessageArgFocus(initialFocusView));
+
+    this.isShow = true;
   }
   
   update() {
+    if (!this.isShow) return;
+    
     // 前のフレームからの経過時間
     const deltaTimeMs = this.game.loop.delta;
     // 一覧表示システム更新

@@ -65,7 +65,8 @@ export class MuseumSystemFlow extends MuseumSystemBase {
     const canvas = scene.game.canvas;
 
     const width = canvas.width;
-    const count = this.setting.displayCount;
+    // 端っこは即反対側にリスポーンなので減算考慮
+    const count = this.setting.displayCount + 1;
     const margin = width / (count - 1);
 
     const startX = 0;

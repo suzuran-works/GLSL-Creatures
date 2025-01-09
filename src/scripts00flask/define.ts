@@ -41,7 +41,7 @@ export const FLASK_OUTLINE_COLOR_VALUE = 122;
 export const FLASK_OUTLINE_COLOR_VALUE_FLOATING = 78;
 
 // 陳列個数
-export const DISPLAY_COUNT = 7;
+export const DISPLAY_COUNT = 6;
 // 透明距離
 export const TRANSPARENT_DISTANCE = 78;
 // フェード距離
