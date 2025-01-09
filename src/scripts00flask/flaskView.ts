@@ -103,6 +103,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
    */
   public removeParentFrom(parent: Phaser.GameObjects.Container) {
     parent.remove(this);
+    this.parents = undefined;
   }
 
   /**
