@@ -47,6 +47,7 @@ export class ShaderGameObject extends Phaser.GameObjects.Container {
       }
     );
     this.shaderObject = this.scene.add.shader(baseShader, 0, 0, width, height);
+    this.shaderObject.setPointer(this.scene.input.activePointer);
     
     // ブレンドモードの設定 NOTE: 変化なし
     //this.shaderObject.gl.enable(WebGLRenderingContext.BLEND);
