@@ -88,8 +88,10 @@ export class MuseumSystemFlow extends MuseumSystemBase {
     this.isFocus = true;
 
     const prevAlphas: number[] = [];
-    const focusTasks: Promise<void>[] = [];
-    const unFocusTasks: Promise<void>[] = [];
+    const hideTasks: Promise<void>[] = [];
+    const scaleUpTasks : Promise<void>[] = [];
+    const showTasks: Promise<void>[] = [];
+    const scaleDownTasks: Promise<void>[] = [];
 
     // フォーカスされたもの以外を透明に
     for (let i = 0; i < this.museumAnchorViews.length; ++i) {
@@ -100,13 +102,14 @@ export class MuseumSystemFlow extends MuseumSystemBase {
         this.scene, {
           targets: anchorView,
           alpha: a,
-          duration: 500,
-          ease: "Quint.easeOut",
+          duration: 220,
+          //ease: "Quint.easeOut",
         }
       );
-      focusTasks.push(task);
+      hideTasks.push(task);
     }
-    
+    await Promise.all(hideTasks);
+
     // フォーカスされたものを拡大
     const prevScale = view.getScale();
     const canvas = this.scene.game.canvas;
@@ -123,9 +126,9 @@ export class MuseumSystemFlow extends MuseumSystemBase {
         ease: "Quart.easeInOut",
       }
     )
-    focusTasks.push(focusTask);
+    scaleUpTasks.push(focusTask);
     
-    await Promise.all(focusTasks);
+    await Promise.all(scaleUpTasks);
     
     // 戻るボタンを表示する
     await tweenAsync(this.scene, {
@@ -161,26 +164,25 @@ export class MuseumSystemFlow extends MuseumSystemBase {
         ease: "Quart.easeInOut",
       }
     );
-    unFocusTasks.push(unfocusTask);
-    
+    scaleDownTasks.push(unfocusTask);
+    await Promise.all(scaleDownTasks);
+
     // 透明になったものをもとに戻す
     for (let i = 0; i < this.museumAnchorViews.length; ++i) {
       const anchorView = this.museumAnchorViews[i];
       const prevAlpha = prevAlphas[i];
       const task = tweenAsync(
         this.scene, {
-          delay: 500,
           targets: anchorView,
           alpha: prevAlpha,
-          duration: 200,
-          ease: "Quart.easeIn",
+          duration: 220,
+          //ease: "Quart.easeIn",
         }
       );
-      unFocusTasks.push(task);
+      showTasks.push(task);
     }
+    await Promise.all(showTasks);
     
-    await Promise.all(unFocusTasks);
-
     this.isFocus = false;
   }
 
