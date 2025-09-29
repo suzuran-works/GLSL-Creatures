@@ -54,7 +54,7 @@ void main(void) {
 
     // 中央から外側に向かってフェードアウト
     float dist = length(p);
-    neon *= smoothstep(0.8, 0.0, dist);
+    neon *= smoothstep(0.7, 0.0, dist);
 
     gl_FragColor = vec4(neon * uAlpha, 1.0);
 }

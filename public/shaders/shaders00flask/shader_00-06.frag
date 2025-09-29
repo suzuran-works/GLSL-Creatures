@@ -46,5 +46,9 @@ void main(void) {
                          0.8,
                          f));
 
+    // 中央から外側に向かってフェードアウト
+    float dist = length(p);
+    color *= smoothstep(0.7, 0.0, dist);
+    
     gl_FragColor = vec4(color * uAlpha, 1.0);
 }
