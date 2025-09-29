@@ -2,54 +2,49 @@
 precision mediump float;
 #endif
 
-// 円運動する光
-
-// time
 uniform float time;
-// resolution
 uniform vec2 resolution;
-// alpha(custom)
 uniform float uAlpha;
-// pixel position (phaser game object)
 varying vec2 fragCoord;
 
-void main( void ) {
-    float t = time;
-    vec2 r = resolution;
+vec3 hsv2rgb(vec3 c) {
+    vec3 rgb = clamp( abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
+                              6.0)-3.0)-1.0,
+                      0.0,
+                      1.0 );
+    rgb = rgb*rgb*(3.0-2.0*rgb); // smooth
+    return c.z * mix(vec3(1.0), rgb, c.y);
+}
 
+void main(void) {
+    float t = time * 0.5;
+    vec2 r = resolution;
     vec2 p = (fragCoord.xy * 2.0 - r) / min(r.x, r.y);
-    
+
+    // 万華鏡効果: 角度を折り返して対称模様に
+    float angle = atan(p.y, p.x);
+    float radius = length(p);
+    angle = mod(angle, 3.14159/3.0); // 6分割
+    p = vec2(cos(angle), sin(angle)) * radius;
+
     float f = 0.0;
     for (float i = 0.0; i < 6.0; i++) {
         float rad = t * (i + 1.0);
-        // iが偶数なら1.0 奇数なら-1.0
-        //float coef = mod(i, 2.0) * 2.0 - 1.0;
-        float coef = 1.0;
         float s = sin(rad);
         float c = cos(rad);
-        mat2 m = mat2(c * coef, -s * coef, s, c);
+        mat2 m = mat2(c, -s, s, c);
         p *= m;
 
-        vec2 q = vec2(p.x - (0.033 * (6.0 - i)), p.y);
-        f += 0.011 / length(q);
+        vec2 q = vec2(p.x - (0.05 * (6.0 - i)), p.y);
+        f += 0.02 / length(q);
     }
-    
-    // f を 1~0 の範囲に収める
-    f = smoothstep(0.06, 1.0, f);
-    
-    vec3 color = vec3(f, f, f);
-    
-    // 意図したいブレンドモード
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // finalColor = srcAlpha * srcColor + (1 - srcAlpha) * dstColor;
-    // src 描画元(これから描画されようとする色)
-    // dst 描画先(既に描画されている色)
-    
-    // rgbの値をalpha値としてのユニフォーム変数uAlphaで乗算
-    // gl_FragColorに渡す第四引数は感覚的に次の通りとなる。
-    // colorが黒の場合
-    // 0.0: 黒い透明を完全に透明にする。(既に描画されているブレンド割合が1)
-    // 1.0: 黒い部分を黒く描画する。(既に描画されている色をブレンド割合が無)
-    // なので通常は0にしておくと意図的なブレンドになる
-    gl_FragColor = vec4(color * uAlpha, 0.0);
+
+    f = smoothstep(0.05, 1.0, f);
+
+    // 色相を時間と座標で回す
+    vec3 color = hsv2rgb(vec3(0.3 + 0.2*sin(t+radius*3.0),
+                         0.8,
+                         f));
+
+    gl_FragColor = vec4(color * uAlpha, 1.0);
 }
