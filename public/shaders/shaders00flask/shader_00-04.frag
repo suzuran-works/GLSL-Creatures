@@ -2,54 +2,78 @@
 precision mediump float;
 #endif
 
-// 円運動する光
-
-// time
 uniform float time;
-// resolution
 uniform vec2 resolution;
-// alpha(custom)
 uniform float uAlpha;
-// pixel position (phaser game object)
 varying vec2 fragCoord;
 
-void main( void ) {
-    float t = time;
+vec3 hsv2rgb(vec3 c) {
+    vec3 rgb = clamp( abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
+                              6.0)-3.0)-1.0,
+                      0.0,
+                      1.0 );
+    rgb = rgb*rgb*(3.0-2.0*rgb);
+    return c.z * mix(vec3(1.0), rgb, c.y);
+}
+
+// 擬似ランダム
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+void main(void) {
+    float t = time * 0.3;
     vec2 r = resolution;
-
+    vec2 uv = fragCoord.xy / r;
     vec2 p = (fragCoord.xy * 2.0 - r) / min(r.x, r.y);
-    
-    float f = 0.0;
-    for (float i = 0.0; i < 6.0; i++) {
-        float rad = t * (i + 1.0);
-        // iが偶数なら1.0 奇数なら-1.0
-        //float coef = mod(i, 2.0) * 2.0 - 1.0;
-        float coef = 1.0;
-        float s = sin(rad);
-        float c = cos(rad);
-        mat2 m = mat2(c * coef, -s * coef, s, c);
-        p *= m;
+    vec2 baseP = p;
 
-        vec2 q = vec2(p.x - (0.033 * (6.0 - i)), p.y);
-        f += 0.011 / length(q);
+    // 幾何学的ゆらめき + 渦巻き
+    float angle = 0.5 * length(p) + t*0.5;
+    float s = sin(angle);
+    float c = cos(angle);
+    mat2 rot = mat2(c, -s, s, c);
+    p = rot * p;
+
+    p.x += 0.2 * sin(p.y*3.0 + t*1.2);
+    p.y += 0.2 * cos(p.x*3.0 + t*1.0);
+    p = abs(p);
+    p = mod(p*6.0 + 1.0, 2.0) - 1.0;
+
+    // 放射状の光
+    float f = 0.0;
+    for (float i = 0.0; i < 5.0; i++) {
+        float rad = t * (i + 1.0);
+        float cs = cos(rad);
+        float sn = sin(rad);
+        mat2 m = mat2(cs, -sn, sn, cs);
+        vec2 q = m * p;
+        f += 0.012 / length(q);
     }
-    
-    // f を 1~0 の範囲に収める
-    f = smoothstep(0.06, 1.0, f);
-    
-    vec3 color = vec3(0, f, 0.0);
-    
-    // 意図したいブレンドモード
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // finalColor = srcAlpha * srcColor + (1 - srcAlpha) * dstColor;
-    // src 描画元(これから描画されようとする色)
-    // dst 描画先(既に描画されている色)
-    
-    // rgbの値をalpha値としてのユニフォーム変数uAlphaで乗算
-    // gl_FragColorに渡す第四引数は感覚的に次の通りとなる。
-    // colorが黒の場合
-    // 0.0: 黒い透明を完全に透明にする。(既に描画されているブレンド割合が1)
-    // 1.0: 黒い部分を黒く描画する。(既に描画されている色をブレンド割合が無)
-    // なので通常は0にしておくと意図的なブレンドになる
-    gl_FragColor = vec4(color * uAlpha, 0.0);
+    f = pow(f, 1.4) * 1.8;
+
+    // 流れる光の線
+    float lines = sin((uv.x + t*0.2)*20.0) * 0.15 + sin((uv.y + t*0.3)*30.0)*0.15;
+
+    // 基本カラー（緑〜エメラルド）
+    float hue = mix(0.3, 0.45, 0.5 + 0.5*sin(t*0.7 + length(p)*2.0));
+    vec3 baseColor = hsv2rgb(vec3(hue, 0.8, f + lines));
+
+    // 派手星屑
+    float star = 0.0;
+    vec2 grid = floor(uv * 120.0); // 星の密度
+    float rnd = hash(grid);
+    if (rnd > 0.98) {
+        float twinkle = 0.5 + 0.5*sin(time*10.0 + rnd*800.0);
+        float d = length(fract(uv*120.0) - 0.5);
+        star = smoothstep(0.078 * 7.0, 0.0, d) * twinkle;
+    }
+
+    vec3 color = baseColor + vec3(0.6, 1.0, 0.7) * star;
+
+    // 中央から外側に向かってフェードアウト
+    float dist = length(baseP);
+    color *= smoothstep(0.5, 0.0, dist);
+
+    gl_FragColor = vec4(color * uAlpha, 1.0);
 }
