@@ -12,6 +12,10 @@
 - shadersフォルダにシェーダーを配置すると自動的に読み込まれて表示されます。
 - ローカル環境での実行 `npm run dev`
 - デプロイはタグをつけてpushするとGitHub Pagesへデプロイされます。
+- URLに`?idx=5`のようにパラメータを渡すとそれに対応するシェーダーの表示が確認できます。
 
 # Deliverables
-- [https://suzuran-works.github.io/GLSL-Creatures/](https://suzuran-works.github.io/GLSL-Creatures/)
+- フラスコの中のGLSL
+  - [https://suzuran-works.github.io/GLSL-Creatures/page00flask/index.html](https://suzuran-works.github.io/GLSL-Creatures/page00flask/index.html)
+- トップページ
+  - [https://suzuran-works.github.io/GLSL-Creatures/](https://suzuran-works.github.io/GLSL-Creatures/)
