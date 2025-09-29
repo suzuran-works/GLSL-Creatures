@@ -2,54 +2,55 @@
 precision mediump float;
 #endif
 
-// 円運動する光
-
-// time
 uniform float time;
-// resolution
 uniform vec2 resolution;
-// alpha(custom)
 uniform float uAlpha;
-// pixel position (phaser game object)
 varying vec2 fragCoord;
 
-void main( void ) {
-    float t = time;
-    vec2 r = resolution;
+vec3 hsv2rgb(vec3 c) {
+    vec3 rgb = clamp( abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
+                              6.0)-3.0)-1.0,
+                      0.0,
+                      1.0 );
+    rgb = rgb*rgb*(3.0-2.0*rgb);
+    return c.z * mix(vec3(1.0), rgb, c.y);
+}
 
+void main(void) {
+    float t = time * 0.3; // ゆるやかに動く
+    vec2 r = resolution;
     vec2 p = (fragCoord.xy * 2.0 - r) / min(r.x, r.y);
+
+    vec2 firstP = p;
     
+    // 幾何学模様のベース: 折り返しで対称性を作る
+    p = abs(p);
+    p = mod(p*9.0 + 1.0, 2.0) - 1.0;
+
     float f = 0.0;
-    for (float i = 0.0; i < 6.0; i++) {
+    for (float i = 0.0; i < 5.0; i++) {
         float rad = t * (i + 1.0);
-        // iが偶数なら1.0 奇数なら-1.0
-        //float coef = mod(i, 2.0) * 2.0 - 1.0;
-        float coef = 1.0;
         float s = sin(rad);
         float c = cos(rad);
-        mat2 m = mat2(c * coef, -s * coef, s, c);
-        p *= m;
+        mat2 m = mat2(c, -s, s, c);
+        vec2 q = m * p;
 
-        vec2 q = vec2(p.x - (0.033 * (6.0 - i)), p.y);
-        f += 0.011 / length(q);
+        q.x += 0.2 * sin(t + i*1.5);
+        q.y += 0.2 * cos(t + i*1.5);
+
+        f += 0.015 / length(q);
     }
-    
-    // f を 1~0 の範囲に収める
-    f = smoothstep(0.06, 1.0, f);
-    
-    vec3 color = vec3(f, 0.0, 0.0);
-    
-    // 意図したいブレンドモード
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // finalColor = srcAlpha * srcColor + (1 - srcAlpha) * dstColor;
-    // src 描画元(これから描画されようとする色)
-    // dst 描画先(既に描画されている色)
-    
-    // rgbの値をalpha値としてのユニフォーム変数uAlphaで乗算
-    // gl_FragColorに渡す第四引数は感覚的に次の通りとなる。
-    // colorが黒の場合
-    // 0.0: 黒い透明を完全に透明にする。(既に描画されているブレンド割合が1)
-    // 1.0: 黒い部分を黒く描画する。(既に描画されている色をブレンド割合が無)
-    // なので通常は0にしておくと意図的なブレンドになる
-    gl_FragColor = vec4(color * uAlpha, 0.0);
+
+    // 輝きを整える
+    f = pow(f, 1.1) * 2.2;
+
+    // 暖色系: Hを0.0〜0.15に固定
+    float hue = mod(0.05 + 0.1*sin(t + length(p)*2.0), 0.15);
+    vec3 color = hsv2rgb(vec3(hue, 1.0, f));
+
+    // 中央から外側に向かってフェードアウト
+    float dist = length(firstP);
+    color *= smoothstep(0.6, 0.0, dist);
+
+    gl_FragColor = vec4(color * uAlpha, 1.0);
 }
