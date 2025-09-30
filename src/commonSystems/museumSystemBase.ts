@@ -78,6 +78,21 @@ export class SystemMessageArgFocus
 }
 
 /**
+ * クリック時メッセージ
+ */
+export class SystemMessageArgClick
+  implements SimpleMessageArgInterface {
+  public static readonly KEY = "SystemMessageArgClick";
+  public readonly mappingKey = SystemMessageArgClick.KEY;
+  
+  public readonly view: MuseumViewInterface;
+  constructor(view: MuseumViewInterface) {
+    this.view = view;
+  }
+}
+  
+
+/**
  * 一覧表示・ピックアップシステム
  * 現状MuseumViewは表示個数のみを生成するわけではなく、作られるだけ作られる。
  */
@@ -170,7 +185,10 @@ export abstract class MuseumSystemBase {
   /**
    * 押下時
    */
-  protected abstract onClickAsync(view: MuseumViewInterface) : Promise<void>;
+  protected onClickAsync(view: MuseumViewInterface) : Promise<void> {
+    this.messageBroker.publish(new SystemMessageArgClick(view));
+    return Promise.resolve();
+  }
   
   /**
    * システムフレーム更新

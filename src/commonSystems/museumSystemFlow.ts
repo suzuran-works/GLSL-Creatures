@@ -86,6 +86,8 @@ export class MuseumSystemFlow extends MuseumSystemBase {
   protected override async onClickAsync(view: MuseumViewInterface): Promise<void> {
     if (this.isFocus) return;
     this.isFocus = true;
+    
+    await super.onClickAsync(view);
 
     const prevAlphas: number[] = [];
     const hideTasks: Promise<void>[] = [];

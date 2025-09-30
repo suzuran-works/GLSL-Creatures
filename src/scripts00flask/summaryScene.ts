@@ -18,7 +18,12 @@ import {
 } from "./define.ts";
 import {preloadJson} from "../utility/preloadUtility.ts";
 import {BackgroundView} from "../commonViews/backgroundView.ts";
-import {MuseumSystemBase, MuseumViewInterface, SystemMessageArgFocus} from "../commonSystems/museumSystemBase.ts";
+import {
+  MuseumSystemBase,
+  MuseumViewInterface,
+  SystemMessageArgClick,
+  SystemMessageArgFocus
+} from "../commonSystems/museumSystemBase.ts";
 import {BackButton} from "../commonViews/backButton.ts";
 import {TextLabel} from "../commonViews/textLabel.ts";
 import {FpsView} from "../commonViews/fpsView.ts";
@@ -27,6 +32,7 @@ import {Queue} from "../utility/queue.ts";
 import {waitMilliSeconds} from "../utility/asyncUtility.ts";
 import {MuseumSetting, MuseumSystemFlow} from "../commonSystems/museumSystemFlow.ts";
 import {SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
+import {SimpleDisposableInterface} from "../utility/simpleDisposableInterface.ts";
 
 
 /**
@@ -52,6 +58,8 @@ export class SummaryScene extends Phaser.Scene {
 
   // 表示フラグ
   private isShow = false;
+
+  private readonly disposables: SimpleDisposableInterface[] = [];
   
   /**
    * コンストラクタ
@@ -93,6 +101,38 @@ export class SummaryScene extends Phaser.Scene {
     this.textLabel.setPosition(canvas.width/2, canvas.height * 0.95);
     this.textLabel.setText(TITLE);
     this.textLabel.setDepth(DefineDepth.UI);
+
+    // フォーカス時テキストラベル更新処理
+    const updateLabel = (arg: MuseumViewInterface) => {
+      const shaderIndex = arg.shaderIndex;
+      const msg = ` :${shaderIndex}`;
+      this.textLabel.setText(TITLE + msg);
+      console.log(msg);
+    }
+    
+    // 初期フォーカス時
+    this.disposables.push(
+      this.messageBroker.subscribe(SystemMessageArgFocus.KEY, (a) => {
+        const arg = a as SystemMessageArgFocus;
+        updateLabel(arg.view);
+      })
+    );
+    
+    // クリック時
+    this.disposables.push(
+      this.messageBroker.subscribe(SystemMessageArgClick.KEY, (a) => {
+        const arg = a as SystemMessageArgClick;
+        updateLabel(arg.view);
+      })
+    );
+    
+    // 一覧に戻る時
+    this.disposables.push(
+      this.backButton.onClick.subscribe(() => {
+        this.textLabel.setText(TITLE);
+      })
+    );
+    
     // FPS表示
     if (isLocalhost()) new FpsView(this);
     
@@ -105,6 +145,11 @@ export class SummaryScene extends Phaser.Scene {
     
     // 表示物をロード
     this.loadMuseumViewsAsync(idx).then();
+  }
+  
+  public dispose() {
+    this.museumSystem.dispose();
+    this.disposables.forEach(d => d.dispose());
   }
 
   /**
