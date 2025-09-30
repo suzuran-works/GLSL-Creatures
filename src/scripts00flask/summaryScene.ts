@@ -99,15 +99,15 @@ export class SummaryScene extends Phaser.Scene {
     // テキストラベル
     this.textLabel = new TextLabel(this, LABEL_TEXT_COLOR, 1, LABEL_TEXT_SIZE);
     this.textLabel.setPosition(canvas.width/2, canvas.height * 0.95);
-    this.textLabel.setText(TITLE);
     this.textLabel.setDepth(DefineDepth.UI);
+    this.textLabel.setTextAsync(TITLE).then();
+
 
     // フォーカス時テキストラベル更新処理
     const updateLabel = (arg: MuseumViewInterface) => {
       const shaderIndex = arg.shaderIndex;
-      const msg = ` :${shaderIndex}`;
-      this.textLabel.setText(TITLE + msg);
-      console.log(msg);
+      const msg = ` idx:${shaderIndex}`;
+      this.textLabel.setTextAsync(TITLE + msg, 780).then();
     }
     
     // 初期フォーカス時
@@ -129,7 +129,7 @@ export class SummaryScene extends Phaser.Scene {
     // 一覧に戻る時
     this.disposables.push(
       this.backButton.onClick.subscribe(() => {
-        this.textLabel.setText(TITLE);
+        this.textLabel.setTextAsync(TITLE, 780).then();
       })
     );
     

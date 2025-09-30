@@ -31,6 +31,15 @@ export class TextLabel extends Phaser.GameObjects.Container {
   public setText(str: string) {
     this.text.setText(str);
   }
+  
+  /**
+   * アニメーション付きで文字列セット
+   */
+  public setTextAsync(str: string, delay = 0) {
+    this.setAlpha(0);
+    this.text.setText(str);
+    return this.showAsync(delay);
+  }
 
   /**
    * 表示
