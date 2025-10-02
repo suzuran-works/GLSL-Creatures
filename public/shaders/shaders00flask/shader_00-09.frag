@@ -16,11 +16,11 @@ void main(void) {
     vec2 baseP = p;
 
     float f = 0.0;
-    for (float i = 0.0; i < 7.0; i++) {
+    for (float i = 0.0; i < 8.0; i++) {
         float rad = t * (i + 1.0) * 0.6;
         float coef = mod(i, 2.0) * 2.0 - 1.0;
-        float s = sin(rad + sin(t * 0.7) * 0.5);
-        float c = cos(rad + cos(t * 0.4) * 0.3);
+        float s = sin(rad + sin(t * 0.8) * 0.5);
+        float c = cos(rad + cos(t * 0.5) * 0.3);
         mat2 m = mat2(c * coef, -s * coef, s, c);
         p *= m;
 

@@ -37,14 +37,16 @@ void main(void) {
     else if (f > 0.2) toonF = 0.3;
     else toonF = 0.0;
 
-    // 炎色（赤〜オレンジ）
-    vec3 col = vec3(0.0);
-    col += vec3(1.0, 0.2, 0.1) * toonF;
-    col += vec3(1.0, 0.6, 0.2) * (toonF * 0.6);
+    // 炎色（緑〜黄色）
+    vec3 col = vec3(0.0, 0.0, 0.0);
+    col += vec3(0.1, 1.0, 0.2) * toonF;      // 緑基調
+    col += vec3(1.0, 1.0, 0.2) * (toonF * 0.6); // 黄色を少し混ぜる
 
-    // 外縁フェード
+    // 外側にフェードアウト
     float dist = length(baseP);
-    col *= smoothstep(0.5, 0.25, dist);
+    float thresDist = 0.45;
+    float fadeLength = 0.0025;
+    col *= smoothstep(thresDist, thresDist - fadeLength, dist);
 
     gl_FragColor = vec4(col * uAlpha, uAlpha);
 }
