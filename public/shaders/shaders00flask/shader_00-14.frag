@@ -60,6 +60,7 @@ float jelly(vec2 p, vec2 pos, float t, float scale, float seed) {
 void main(void) {
     vec2 r = resolution;
     vec2 p = (fragCoord.xy * 2.0 - r) / min(r.x, r.y);
+    vec2 baseP = p;
     float t = time * 0.4;
 
     vec3 col = vec3(0.0, 0.0, 0.0); // 背景（深海）
@@ -73,7 +74,7 @@ void main(void) {
         float angle = seed * 6.283 + sin(t * 0.2 + seed) * 0.5;
         float radius = 0.35 + 0.05 * sin(t * 0.5 + seed * 5.0);
         vec2 pos = vec2(cos(angle), sin(angle)) * radius;
-        pos.y += 0.05 * sin(t + fi);
+        pos.y += 0.1 * sin(t + fi);
 
         // 呼吸（傘のスケール）
         float scale = 0.25 + 0.05 * sin(t * 0.8 + fi * 1.7);
@@ -86,6 +87,12 @@ void main(void) {
         vec3 jcol = hsv2rgb(vec3(hue, 0.7, 1.0)) * j;
         col += jcol;
     }
+
+    // 外側にフェードアウト
+    float dist = length(baseP);
+    float thresDist = 0.45;
+    float fadeLength = 0.0025;
+    col *= smoothstep(thresDist, thresDist - fadeLength, dist);
 
     col = pow(col, vec3(0.9));
     gl_FragColor = vec4(col * uAlpha, uAlpha);
