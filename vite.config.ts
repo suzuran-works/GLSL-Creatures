@@ -8,6 +8,7 @@ export default defineConfig({
             input: {
                 top: resolve(__dirname, 'index.html'),
                 page00: resolve(__dirname, 'page00flask', 'index.html'),
+                page01: resolve(__dirname, 'page01eye', 'index.html'),
             },
         },
     },

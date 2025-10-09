@@ -13,6 +13,11 @@
 - ローカル環境での実行 `npm run dev`
 - デプロイはタグをつけてpushするとGitHub Pagesへデプロイされます。
 - URLに`?idx=5`のようにパラメータを渡すとそれに対応するシェーダーの表示が確認できます。
+- 新しいページの追加方法
+  - `vite.config.ts`に追記
+  - `pageXX/index.html`を追加
+  -  `src/scriptsXX`フォルダを追加してスクリプトを配置
+
 
 # Deliverables
 - フラスコの中のGLSL
