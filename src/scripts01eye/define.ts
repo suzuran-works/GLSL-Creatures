@@ -17,6 +17,19 @@ export const DefineDepth = {
   UI: 100,
 }
 
+// 一覧表示の際の表示時間
+export const DISPLAY_DURATION = 7.8;
+// 一覧表示個数
+export const SHOWCASE_COUNT = 1;
+
+// 画像イメージキー
+export const IMAGE_KEY = "view_image"
+// 画像パス
+export const TEXTURE_PATH = "./../textures/01eye.webp";
+
+// 羅列時のビューのスケール
+export const SHOWCASE_VIEW_SCALE = 0.78;
+
 // 背景色
 export const BACKGROUND_COLOR = GetColorCodeByRGB(0, 0, 0);
 // 戻るボタン色

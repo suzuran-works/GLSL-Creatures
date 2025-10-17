@@ -1,15 +1,15 @@
 import Phaser from 'phaser';
 import {createConfig} from "../define.ts";
-//import {getAssetResourceKey, getShaderKey} from "../utility/assetResourceKeyUtility.ts";
+import {getShaderKey} from "../utility/assetResourceKeyUtility.ts";
 import {AssetLoader} from "../utility/assetLoader.ts";
-//import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
+import {loadSingleShaderTextAsync} from "../utility/assetLoadUtility.ts";
 import {
   BACK_BUTTON_ALPHA,
   BACK_BUTTON_COLOR,
-  BACKGROUND_COLOR,
-  CATEGORY, DefineDepth,
-  LABEL_TEXT_COLOR, LABEL_TEXT_SIZE,
-  SHADER_FOLDER, TITLE,
+  BACKGROUND_COLOR, CATEGORY,
+  DefineDepth, DISPLAY_DURATION, IMAGE_KEY,
+  LABEL_TEXT_COLOR, LABEL_TEXT_SIZE, SHADER_FOLDER, SHOWCASE_COUNT, TEXTURE_PATH,
+  TITLE,
 } from "./define.ts";
 import {BackgroundView} from "../commonViews/backgroundView.ts";
 import {
@@ -26,6 +26,8 @@ import {Queue} from "../utility/queue.ts";
 import {waitMilliSeconds} from "../utility/asyncUtility.ts";
 import {SimpleMessageBroker} from "../utility/simpleMessageBroker.ts";
 import {SimpleDisposableInterface} from "../utility/simpleDisposableInterface.ts";
+import {MuseumSetting, MuseumSystemSingleFade} from "../commonSystems/museumSystemSingleFade.ts";
+import {EmptyViewFactory, EyeView} from "./eyeView.ts";
 
 
 /**
@@ -67,6 +69,8 @@ export class SummaryScene extends Phaser.Scene {
    */
   preload() {
     console.log('SummaryScene preload');
+    
+    this.load.image(IMAGE_KEY, TEXTURE_PATH);
   }
 
   /**
@@ -86,6 +90,7 @@ export class SummaryScene extends Phaser.Scene {
     new BackgroundView(this, BACKGROUND_COLOR);
     // 戻るボタン
     this.backButton = new BackButton(this, BACK_BUTTON_COLOR, BACK_BUTTON_ALPHA);
+    this.backButton.setDepth(DefineDepth.UI);
     // テキストラベル
     this.textLabel = new TextLabel(this, LABEL_TEXT_COLOR, 1, LABEL_TEXT_SIZE);
     this.textLabel.setPosition(canvas.width/2, canvas.height * 0.95);
@@ -127,14 +132,14 @@ export class SummaryScene extends Phaser.Scene {
     if (isLocalhost()) new FpsView(this);
 
     // 空のフラスコビューファクトリ
-    //const emptyViewFactory = new EmptyFlaskViewFactory(this);
+    const emptyViewFactory = new EmptyViewFactory(this, IMAGE_KEY);
 
     // 表示システム
-    //const museumSetting = new MuseumSetting(DISPLAY_COUNT, FADE_DISTANCE, TRANSPARENT_DISTANCE, FLOW_SPEED)
-    //this.museumSystem = new MuseumSystemFlow(this, this.messageBroker, this.viewQueue, emptyViewFactory, this.backButton, museumSetting);
+    const museumSetting = new MuseumSetting(DISPLAY_DURATION);
+    this.museumSystem = new MuseumSystemSingleFade(this, this.messageBroker, this.viewQueue, emptyViewFactory, this.backButton, museumSetting);
 
     // 表示物をロード
-    //this.loadMuseumViewsAsync(idx).then();
+    this.loadMuseumViewsAsync(idx).then();
   }
 
   public dispose() {
@@ -145,7 +150,6 @@ export class SummaryScene extends Phaser.Scene {
   /**
    * シェーダーロード失敗するまでロード
    */
-  /*
   private async loadMuseumViewsAsync(idx: string | null) {
     const invalidNumber = -1;
     const initialFocusIndex = idx ? parseInt(idx, 10) : invalidNumber;
@@ -162,8 +166,7 @@ export class SummaryScene extends Phaser.Scene {
       if (loadModel.failCount > 0) return {view: undefined, isFail: true};
       // ビューを作成
       const shaderKey = getShaderKey(CATEGORY, sIndex);
-      const flaskOutlineJsonKey = getAssetResourceKey(PATH_JSONS.FLASK_LEFT_OUTLINE_A);
-      const view = FlaskView.Create(this, sIndex, shaderKey, flaskOutlineJsonKey);
+      const view = EyeView.Create(this, sIndex, shaderKey, IMAGE_KEY);
       this.viewQueue.enqueue(view);
       return {view:view, isFail: false};
     }
@@ -190,38 +193,21 @@ export class SummaryScene extends Phaser.Scene {
       await waitMilliSeconds(10);
       shaderIndex++;
       createCount++;
-
+      
       // 指定個数まで作れたら陳列を表示
-      if (createCount === DISPLAY_COUNT) this.tryShowAsync(initialFocusView).then();
+      if (createCount === SHOWCASE_COUNT) this.tryShowAsync(initialFocusView).then();
     }
     // 指定個数まで作れていなかった場合を考慮
-    if (createCount < DISPLAY_COUNT) this.tryShowAsync(initialFocusView).then();
+    if (createCount < SHOWCASE_COUNT) this.tryShowAsync(initialFocusView).then();
 
     console.log(`loadMuseumViewsAsync finish noLoadIndex: ${shaderIndex}`);
   }
-  */
 
   /**
    * 表示を試みる(表示済であれば早期終了)
    */
-  /*
   private async tryShowAsync(initialFocusView?: MuseumViewInterface | undefined) {
     if (this.isShow) return;
-
-    // 初期フォーカスされるものが中央に来るように細工
-    if (initialFocusView) {
-      const count = Math.floor(this.viewQueue.size());
-      if (count < DISPLAY_COUNT/2) {
-        const v = this.viewQueue.dequeue();
-        if (v) this.viewQueue.enqueue(v);
-      } else {
-        const pickCount = count - DISPLAY_COUNT/2;
-        for (let i = 0; i < pickCount; i++) {
-          const v = this.viewQueue.dequeue();
-          if (v) this.viewQueue.enqueue(v);
-        }
-      }
-    }
 
     // 陳列を表示
     this.museumSystem.attachAll();
@@ -230,7 +216,6 @@ export class SummaryScene extends Phaser.Scene {
 
     this.isShow = true;
   }
-  */
 
   update() {
     if (!this.isShow) return;
