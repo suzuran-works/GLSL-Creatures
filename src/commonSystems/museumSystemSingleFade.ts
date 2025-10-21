@@ -78,8 +78,6 @@ export class MuseumSystemSingleFade extends MuseumSystemBase {
     
     await super.onClickAsync(view);
     
-    console.log("@@@@@@@@@@@@@@@@",view);
-
     const scaleUpTasks : Promise<void>[] = [];
     const scaleDownTasks: Promise<void>[] = [];
 
@@ -145,7 +143,11 @@ export class MuseumSystemSingleFade extends MuseumSystemBase {
 
   protected override updateViews(deltaTimeMs: number) {
     // ズーム中は早期リターン
-    if (this.isFocus) return;
+    if (this.isFocus) {
+      // ズームから戻った際に少し余裕をもたしてフェードアウトする
+      this.elapsedMs = this.setting.displayDuration * 1000/2;
+      return;
+    }
     
     const anchorView = this.museumAnchorViews[0];
     let isReset = false;
