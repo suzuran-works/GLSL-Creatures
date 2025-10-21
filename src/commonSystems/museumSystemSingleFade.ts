@@ -77,29 +77,11 @@ export class MuseumSystemSingleFade extends MuseumSystemBase {
     this.isFocus = true;
     
     await super.onClickAsync(view);
+    
+    console.log("@@@@@@@@@@@@@@@@",view);
 
-    const prevAlphas: number[] = [];
-    const hideTasks: Promise<void>[] = [];
     const scaleUpTasks : Promise<void>[] = [];
-    const showTasks: Promise<void>[] = [];
     const scaleDownTasks: Promise<void>[] = [];
-
-    // フォーカスされたもの以外を透明に
-    for (let i = 0; i < this.museumAnchorViews.length; ++i) {
-      const anchorView = this.museumAnchorViews[i];
-      prevAlphas.push(anchorView.alpha);
-      const a = anchorView.contentView === view ? 1 : 0;
-      const task = tweenAsync(
-        this.scene, {
-          targets: anchorView,
-          alpha: a,
-          duration: 220,
-          //ease: "Quint.easeOut",
-        }
-      );
-      hideTasks.push(task);
-    }
-    await Promise.all(hideTasks);
 
     // フォーカスされたものを拡大
     const prevScale = view.getScale();
@@ -157,22 +139,6 @@ export class MuseumSystemSingleFade extends MuseumSystemBase {
     );
     scaleDownTasks.push(unfocusTask);
     await Promise.all(scaleDownTasks);
-
-    // 透明になったものをもとに戻す
-    for (let i = 0; i < this.museumAnchorViews.length; ++i) {
-      const anchorView = this.museumAnchorViews[i];
-      const prevAlpha = prevAlphas[i];
-      const task = tweenAsync(
-        this.scene, {
-          targets: anchorView,
-          alpha: prevAlpha,
-          duration: 220,
-          //ease: "Quart.easeIn",
-        }
-      );
-      showTasks.push(task);
-    }
-    await Promise.all(showTasks);
     
     this.isFocus = false;
   }

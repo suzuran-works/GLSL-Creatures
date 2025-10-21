@@ -195,7 +195,7 @@ export class SummaryScene extends Phaser.Scene {
       createCount++;
       
       // 指定個数まで作れたら陳列を表示
-      if (createCount === SHOWCASE_COUNT) this.tryShowAsync(initialFocusView).then();
+      if (createCount >= SHOWCASE_COUNT) this.tryShowAsync(initialFocusView).then();
     }
     // 指定個数まで作れていなかった場合を考慮
     if (createCount < SHOWCASE_COUNT) this.tryShowAsync(initialFocusView).then();
