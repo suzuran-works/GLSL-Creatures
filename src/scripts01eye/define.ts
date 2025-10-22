@@ -26,9 +26,16 @@ export const SHOWCASE_COUNT = 1;
 export const IMAGE_KEY = "view_image"
 // 画像パス
 export const TEXTURE_PATH = "./../textures/01eye.webp";
+// イメージオブジェクトのTintカラー
+export const IMAGE_TINT_COLOR = GetColorCodeByRGB(78, 78, 78);
 
 // 羅列時のビューのスケール
 export const SHOWCASE_VIEW_SCALE = 0.78;
+
+// シェーダーオブジェクトサイズ
+export const SHADER_OBJECT_SIZE = {width: 320, height: 320};
+// シェーダーオブジェクトオフセット
+export const SHADER_OBJECT_OFFSET = {x: 8, y: 0};
 
 // 背景色
 export const BACKGROUND_COLOR = GetColorCodeByRGB(0, 0, 0);

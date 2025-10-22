@@ -5,7 +5,9 @@ import {getParents} from "../utility/containerUtility.ts";
 import {MuseumViewInterface} from "../commonSystems/museumSystemBase.ts";
 import {SimpleObservable} from "../utility/simpleObservable.ts";
 import {ReadonlyObservableInterface} from "../utility/simpleDisposableInterface.ts";
-import {SHOWCASE_VIEW_SCALE} from "./define.ts";
+import {IMAGE_TINT_COLOR, SHADER_OBJECT_OFFSET, SHADER_OBJECT_SIZE, SHOWCASE_VIEW_SCALE} from "./define.ts";
+
+const IS_DEBUG = false;
 
 /**
  * 目ビュー
@@ -36,6 +38,7 @@ export class EyeView extends Phaser.GameObjects.Container implements MuseumViewI
     shaderKey: string,
     imageKey: string,
     shaderObjectOffset: {x:number, y:number},
+    shaderObjectSize: {width:number, height:number},
   ) {
     super(scene, 0, 0);
     scene.add.existing(this);
@@ -46,7 +49,7 @@ export class EyeView extends Phaser.GameObjects.Container implements MuseumViewI
     this.setSize(width, height);
     
     // シェーダーオブジェクト作成
-    if (shaderKey != "") this.addShaderObject(shaderKey, shaderObjectOffset);
+    if (shaderKey != "") this.addShaderObject(shaderKey, shaderObjectOffset, shaderObjectSize);
     
     // 画像
     this.addImage(imageKey);
@@ -122,9 +125,9 @@ export class EyeView extends Phaser.GameObjects.Container implements MuseumViewI
   /**
    * シェーダーオブジェクト作成
    */
-  private addShaderObject(shaderKey: string, shaderObjectOffset: {x:number, y:number}) {
-    const width = this.width;
-    const height = this.height;
+  private addShaderObject(shaderKey: string, shaderObjectOffset: {x:number, y:number}, shaderObjectSize: {width:number, height:number}) {
+    const width = shaderObjectSize.width;
+    const height = shaderObjectSize.height;
     this.shaderGameObject = new ShaderGameObject(this.scene, width, height, shaderKey);
     this.shaderGameObject.setPosition(shaderObjectOffset.x, shaderObjectOffset.y);
     this.add(this.shaderGameObject);
@@ -135,10 +138,13 @@ export class EyeView extends Phaser.GameObjects.Container implements MuseumViewI
    */
   private addImage(imageKey: string) {
     const image = this.scene.add.image(0, 0, imageKey);
+    image.setTint(IMAGE_TINT_COLOR);
     this.add(image);
+    
+    if (IS_DEBUG) {
+      image.setAlpha(0.5);
+    }
   }
-  
-
   
   /**
    * フレーム更新
@@ -196,8 +202,19 @@ export class EyeView extends Phaser.GameObjects.Container implements MuseumViewI
     const canvas = scene.sys.game.canvas;
     const viewSize = {width: canvas.width, height: canvas.height};
     const initScale = SHOWCASE_VIEW_SCALE;
+    const shaderObjectSize = SHADER_OBJECT_SIZE;
+    const shaderObjectOffset = SHADER_OBJECT_OFFSET;
 
-    const view = new EyeView(scene, viewSize.width, viewSize.height, shaderIndex, shaderKey, imageKey, {x:0, y:0});
+    const view = new EyeView(
+      scene,
+      viewSize.width,
+      viewSize.height,
+      shaderIndex,
+      shaderKey,
+      imageKey,
+      shaderObjectOffset,
+      shaderObjectSize,
+    );
     view.setHidePosition();
     view.setScale(initScale, initScale);
     return view;
