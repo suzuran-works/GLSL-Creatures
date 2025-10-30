@@ -124,6 +124,13 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
   }
 
   /**
+   * @inheritDoc
+   */
+  public setCustomAlpha(_alpha: number) {
+    
+  }
+  
+  /**
    * ボタン追加
    */
   private addButtonRect() {

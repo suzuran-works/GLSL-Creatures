@@ -164,13 +164,18 @@ export class MuseumSystemSingleFade extends MuseumSystemBase {
     const fadeOutEndAt = displayDurMs - 220;
     if (this.elapsedMs < fadeInEndAt) {
       alphaValue = smoothstep(fadeInBeginAt, fadeInEndAt, this.elapsedMs);
-    } else if (this.elapsedMs > fadeOutBeginAt) {
+    } else if (this.elapsedMs >= fadeInEndAt && this.elapsedMs < fadeOutBeginAt) {
+      alphaValue = 1;
+    } else if (this.elapsedMs >= fadeOutBeginAt) {
       alphaValue = 1 - smoothstep(fadeOutBeginAt, fadeOutEndAt, this.elapsedMs);
     } else {
-      alphaValue = 1;
+      alphaValue = 0;
     }
-    if (!this.isFocus) anchorView.setAlpha(alphaValue);
-    if (isReset) this.linkOrCreate(anchorView);
+    if (!this.isFocus) anchorView.contentView?.setCustomAlpha(alphaValue);
+    if (isReset) {
+      this.linkOrCreate(anchorView);
+      anchorView.contentView?.setCustomAlpha(0);
+    }
     anchorView.updateView(deltaTimeMs);
   }
 }

@@ -101,6 +101,22 @@ export class EyeView extends Phaser.GameObjects.Container implements MuseumViewI
   public getScale() {
     return {x: this.scaleX, y: this.scaleY};
   }
+  
+  /**
+   * @inheritDoc
+   */
+  public setCustomAlpha(alpha: number) {
+    // alpha が 0~0.5
+    if (alpha >= 0 && alpha < 0.5) {
+      this.shaderGameObject?.setUniformAlpha(0);
+      this.setAlpha(alpha * 2);
+    } 
+    // alpha が 0.5~1
+    else {
+      this.shaderGameObject?.setUniformAlpha((alpha - 0.5) * 2);
+      this.setAlpha(1);
+    }
+  }
 
   /**
    * ボタン追加
@@ -152,8 +168,8 @@ export class EyeView extends Phaser.GameObjects.Container implements MuseumViewI
   public updateView(_deltaTimeMs: number) {
     
     // 透明度(親階層考慮)
-    const alpha = this.getApparentlyAlpha();
-    this.shaderGameObject?.setUniformAlpha(alpha);
+    //const alpha = this.getApparentlyAlpha();
+    //this.shaderGameObject?.setUniformAlpha(alpha);
     
     // スケール変更時
     if (this.scaleX != this.prevScaleX) {

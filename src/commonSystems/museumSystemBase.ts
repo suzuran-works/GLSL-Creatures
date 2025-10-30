@@ -49,6 +49,11 @@ export interface MuseumViewInterface {
    * スケール取得
    */
   getScale(): {x: number, y: number};
+
+  /**
+   * アルファのカスタム更新
+   */
+  setCustomAlpha(alpha: number): void;
 }
 
 /**
