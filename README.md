@@ -22,5 +22,7 @@
 # Deliverables
 - フラスコの中のGLSL
   - [https://suzuran-works.github.io/GLSL-Creatures/page00flask/index.html](https://suzuran-works.github.io/GLSL-Creatures/page00flask/index.html)
+- EYE SHADER
+  - [https://suzuran-works.github.io/GLSL-Creatures/page01eye/index.html](https://suzuran-works.github.io/GLSL-Creatures/page01eye/index.html)
 - トップページ
   - [https://suzuran-works.github.io/GLSL-Creatures/](https://suzuran-works.github.io/GLSL-Creatures/)

@@ -1,7 +1,7 @@
 import {GetColorCodeByRGB, GetColorCodeTextByRGB} from "../utility/colorUtility.ts";
 
 // タイトル
-export const TITLE = "GLSL EYE";
+export const TITLE = "EYE SHADER";
 
 // カテゴリー番号
 export const CATEGORY = 1;
