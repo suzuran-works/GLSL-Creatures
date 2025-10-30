@@ -62,10 +62,10 @@ void main(void){
     col = pow(col, vec3(0.85));
 
     // 外側にフェードアウト
-    float dist = length(baseP);
-    float thresDist = 0.45;
-    float fadeLength = 0.25;
-    col *= smoothstep(thresDist, thresDist - fadeLength, dist);
+    //float dist = length(baseP);
+    //float thresDist = 0.45;
+    //float fadeLength = 0.25;
+    //col *= smoothstep(thresDist, thresDist - fadeLength, dist);
 
     gl_FragColor = vec4(col * uAlpha, uAlpha);
 }
