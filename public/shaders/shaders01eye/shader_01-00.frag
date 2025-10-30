@@ -14,65 +14,57 @@ vec3 hsv2rgb(vec3 c){
     return c.z * mix(vec3(1.0), rgb, c.y);
 }
 
+// ==== 簡易ノイズ ====
+float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
+float noise(vec2 p){
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    vec2 u = f*f*(3.0-2.0*f);
+    return mix(
+        mix(hash(i+vec2(0.0,0.0)), hash(i+vec2(1.0,0.0)), u.x),
+        mix(hash(i+vec2(0.0,1.0)), hash(i+vec2(1.0,1.0)), u.x),
+        u.y
+    );
+}
+
 void main(void){
     vec2 r = resolution;
     vec2 p = (fragCoord.xy * 2.0 - r) / min(r.x, r.y);
     vec2 baseP = p;
-    float t = time * 0.6;
+    float t = time * 0.5;
 
-    // ==== 極座標 ====
+    // ===== 万華鏡的反射処理 =====
+    p = abs(mod(p*3.0, 2.0) - 1.0);  // 反射タイルで左右上下対称
     float angle = atan(p.y, p.x);
     float radius = length(p);
 
-    // ==== リング（幅を5倍） ====
-    float rings = 0.0;
-    const int layers = 8;
-    for(int i=0; i<layers; i++){
-        float fi = float(i);
-        float offset = fi * 0.15 + 0.2*sin(t*0.4 + fi*1.2);
-        // “25.0”を変えずにsmoothstepの幅を5倍に広げる
-        float wave = sin((radius - offset)*25.0 - t*2.0 + fi*1.1);
-        float band = smoothstep(0.20, 0.0, abs(wave)); // ← 幅5倍
-        rings += band * (0.8 + 0.2*sin(t + fi*2.0));
-    }
+    // ===== 幾何＋ノイズの動き =====
+    float n = noise(vec2(angle*2.0, radius*2.5 + t*0.6));
+    float pattern = sin(radius*12.0 - t*2.0 + n*6.2831)
+    + cos(angle*10.0 + t*1.3)
+    + sin(dot(p, p*4.0) - t*0.9);
 
-    // ==== 放射ライン（6分割） ====
-    float segments = 8.0;
-    float segAngle = 3.14159265 * 2.0 / segments;
-    float lineWidth = 0.015;
+    // トゥーン階調っぽく3段階化
+    float stepped = floor(pattern * 2.5) / 2.5;
+    float edge = smoothstep(0.05, 0.0, abs(fract(pattern*2.0)-0.5));
 
-    // 角度をセグメントごとに折り返して、中心軸からの距離を取る
-    float angMod = mod(angle, segAngle);
-    float distToLine = min(angMod, segAngle - angMod);
-    float lineMask = smoothstep(lineWidth, 0.0, distToLine);
+    // ===== 色 =====
+    float hue = fract(0.3 + 0.2*sin(t*0.4) + stepped*0.15 + n*0.3);
+    float sat = 0.6 + 0.3*sin(t + n*6.0);
+    float val = 0.9 + 0.1*sin(t*1.2 + radius*8.0);
 
-    // ==== カラー設定 ====
-    float hue = fract(angle / 6.28318 + 0.5 + 0.05*sin(t*0.5));
-    float sat = 0.8;
-    float val = 1.0;
-    vec3 ringColor = hsv2rgb(vec3(hue, sat, val));
+    vec3 color = hsv2rgb(vec3(hue, sat, val));
+    color *= (0.7 + 0.3 * stepped);
+    color = mix(color, vec3(1.0), edge*0.3);
 
-    // リング表示
-    vec3 col = ringColor * rings * smoothstep(1.1, 0.3, radius);
-
-    // ライン（ホワイトでくっきり）
-    vec3 lineCol = vec3(1.0);
-    //col = mix(col, lineCol, lineMask * 0.8);
-    col = lineCol;
-
-    // 背景（うすめの紫）
-    //vec3 bg = mix(vec3(0.04,0.0,0.08), vec3(0.1,0.0,0.15), p.y*0.5+0.5);
-    vec3 bg = vec3(0.96, 0.96, 0.98);
-    col = mix(bg, col, rings + lineMask*0.8);
-
-    // コントラスト補正
-    col = pow(col, vec3(0.9));
+    // ===== 出力 =====
+    color = pow(color, vec3(0.9));
 
     // 外側にフェードアウト
     float dist = length(baseP);
     float thresDist = 0.98;
     float fadeLength = 0.0022;
-    col *= smoothstep(thresDist, thresDist - fadeLength, dist);
-
-    gl_FragColor = vec4(col * uAlpha, uAlpha);
+    color *= smoothstep(thresDist, thresDist - fadeLength, dist);
+    
+    gl_FragColor = vec4(color * uAlpha, uAlpha);
 }

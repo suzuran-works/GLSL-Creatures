@@ -172,40 +172,5 @@ export class MuseumSystemSingleFade extends MuseumSystemBase {
     if (!this.isFocus) anchorView.setAlpha(alphaValue);
     if (isReset) this.linkOrCreate(anchorView);
     anchorView.updateView(deltaTimeMs);
-    
-    /*
-    // ズーム中は移動停止
-    const flowSpeed = this.isFocus ?  0 : this.setting.flowSpeed
-    
-    const transparentDistance = this.setting.fadeDistance;
-    const canvasWidth = this.scene.game.canvas.width;
-    const fadeThresBeginX = canvasWidth - transparentDistance;
-    const fadeThresEndX = transparentDistance;
-    const fadeDistance = this.setting.fadeDistance;
-    for (let i = 0; i < this.positionRefs.length; ++i) {
-      const posRef = this.positionRefs[i];
-      posRef.x += -flowSpeed * deltaTimeMs;
-      let isReset = false;
-      if (posRef.x < 0) {
-        posRef.x = this.scene.game.canvas.width;
-        isReset = true;
-      }
-
-      let alphaValue = 1;
-      if (posRef.x > canvasWidth/2) {
-        if (posRef.x > fadeThresBeginX) alphaValue = 0;
-        else alphaValue = smoothstep(fadeThresBeginX, fadeThresBeginX - fadeDistance, posRef.x);
-      } else {
-        if (posRef.x < fadeThresEndX) alphaValue = 0;
-        else alphaValue = smoothstep(fadeThresEndX, fadeThresEndX + fadeDistance, posRef.x);
-      }
-
-      const anchorView = this.museumAnchorViews[i];
-      anchorView.setPosition(posRef.x, posRef.y);
-      if (!this.isFocus) anchorView.setAlpha(alphaValue);
-      if (isReset) this.linkOrCreate(anchorView);
-      anchorView.updateView(deltaTimeMs);
-    }
-    */
   }
 }
