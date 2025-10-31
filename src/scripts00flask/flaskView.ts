@@ -17,6 +17,7 @@ import {MuseumViewInterface} from "../commonSystems/museumSystemBase.ts";
 import {inverseLerp} from "../utility/mathUtility.ts";
 import {SimpleObservable} from "../utility/simpleObservable.ts";
 import {ReadonlyObservableInterface} from "../utility/simpleDisposableInterface.ts";
+import {fixScaleByWidth} from "../define.ts";
 
 /**
  * フラスコビュー
@@ -65,8 +66,10 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     // 自身のサイズ
     this.setSize(width, height);
     
+    const fixScale = fixScaleByWidth(scene.game.canvas);
+    
     // シェーダーオブジェクト作成
-    if (shaderKey != "") this.addShaderObject(shaderKey, shaderObjectOffSetY);
+    if (shaderKey != "") this.addShaderObject(shaderKey, shaderObjectOffSetY * fixScale);
     
     // フラスコの輪郭を描画
     this.addFlaskOutline(flaskLeftOutlineJsonKey);
@@ -170,6 +173,8 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
   private addFlaskOutline(jsonKey: string) {
     // Graphicsオブジェクトを作成
     this.flaskOutlineGraphics = this.scene.add.graphics();
+    const fixScale = fixScaleByWidth(this.scene.game.canvas);
+    this.flaskOutlineGraphics.setScale(fixScale);
     this.add(this.flaskOutlineGraphics);
 
     const isImportData = jsonKey != "";
