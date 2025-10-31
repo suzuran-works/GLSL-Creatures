@@ -55,7 +55,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     shaderIndex: number,
     shaderKey: string,
     flaskLeftOutlineJsonKey:string,
-    shaderObjectOffSetY: number = 185
+    shaderObjectOffSetY: number = 186
   ) {
     super(scene, 0, 0);
     scene.add.existing(this);
