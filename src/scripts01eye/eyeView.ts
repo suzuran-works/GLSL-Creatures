@@ -6,6 +6,7 @@ import {MuseumViewInterface} from "../commonSystems/museumSystemBase.ts";
 import {SimpleObservable} from "../utility/simpleObservable.ts";
 import {ReadonlyObservableInterface} from "../utility/simpleDisposableInterface.ts";
 import {IMAGE_TINT_COLOR, SHADER_OBJECT_OFFSET, SHADER_OBJECT_SIZE, SHOWCASE_VIEW_SCALE} from "./define.ts";
+import {fixScaleByWidth} from "../define.ts";
 
 const IS_DEBUG = false;
 
@@ -145,7 +146,9 @@ export class EyeView extends Phaser.GameObjects.Container implements MuseumViewI
     const width = shaderObjectSize.width;
     const height = shaderObjectSize.height;
     this.shaderGameObject = new ShaderGameObject(this.scene, width, height, shaderKey);
-    this.shaderGameObject.setPosition(shaderObjectOffset.x, shaderObjectOffset.y);
+    const fixScale = fixScaleByWidth(this.scene.game.canvas);
+    this.shaderGameObject.setPosition(shaderObjectOffset.x * fixScale, shaderObjectOffset.y * fixScale);
+    this.shaderGameObject.setScale(fixScale);
     this.add(this.shaderGameObject);
   }
   
@@ -155,6 +158,8 @@ export class EyeView extends Phaser.GameObjects.Container implements MuseumViewI
   private addImage(imageKey: string) {
     const image = this.scene.add.image(0, 0, imageKey);
     image.setTint(IMAGE_TINT_COLOR);
+    const fixScale = fixScaleByWidth(this.scene.game.canvas);
+    image.setScale(fixScale);
     this.add(image);
     
     if (IS_DEBUG) {
@@ -215,8 +220,8 @@ export class EyeView extends Phaser.GameObjects.Container implements MuseumViewI
    * 作成
    */
   public static Create(scene: Phaser.Scene, shaderIndex: number, shaderKey: string, imageKey: string): MuseumViewInterface {
-    const canvas = scene.sys.game.canvas;
-    const viewSize = {width: canvas.width, height: canvas.height};
+    const canvas = scene.game.canvas;
+    const viewSize = {width: canvas.width, height: canvas.width};
     const initScale = SHOWCASE_VIEW_SCALE;
     const shaderObjectSize = SHADER_OBJECT_SIZE;
     const shaderObjectOffset = SHADER_OBJECT_OFFSET;
