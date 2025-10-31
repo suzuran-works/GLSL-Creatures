@@ -55,7 +55,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
     shaderIndex: number,
     shaderKey: string,
     flaskLeftOutlineJsonKey:string,
-    shaderObjectOffSetY: number = 180
+    shaderObjectOffSetY: number = 185
   ) {
     super(scene, 0, 0);
     scene.add.existing(this);
@@ -281,7 +281,7 @@ export class FlaskView extends Phaser.GameObjects.Container implements MuseumVie
    */
   public static Create(scene: Phaser.Scene, shaderIndex: number, shaderKey: string, flaskLeftOutlineJsonKey: string): MuseumViewInterface {
     const canvas = scene.sys.game.canvas;
-    const viewSize = {width: canvas.width, height: canvas.height};
+    const viewSize = {width: canvas.width, height: canvas.width};
     const initScale = FLOWING_FLASK_VIEW_SCALE;
 
     const view = new FlaskView(scene, viewSize.width, viewSize.height, shaderIndex, shaderKey, flaskLeftOutlineJsonKey);
